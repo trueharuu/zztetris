@@ -269,8 +269,8 @@ function nearestColor(h,s,v) {
     if (v/2.55<=40) return '.'
 
     if (inRange(h,0,16) || inRange(h,325,360)) return 'Z'
-    else if (inRange(h,16,45)) return 'L'
-    else if (inRange(h,45,70)) return 'O'
+    else if (inRange(h,16,40)) return 'L'
+    else if (inRange(h,40,70)) return 'O'
     else if (inRange(h,70,150)) return 'S'
     else if (inRange(h,150,200)) return 'I'
     else if (inRange(h,200,265)) return 'J'
@@ -588,10 +588,12 @@ function callback() {
         while (queue.length<10) {
             var shuf = names.shuffle()
             shuf.map(p => queue.push(p))
+            queue.push('|')
         }
         xPOS = spawn[0]
         yPOS = spawn[1]
         rot = 0
+        if (queue[0] == '|') queue.shift()
         piece = queue.shift()
         checkTopOut()
         updateQueue()
@@ -600,10 +602,21 @@ function callback() {
     }
 
     function updateQueue() {
+        temp = false
         ctxN.clearRect(0,0,90,360)
         ctxH.clearRect(0,0,90,60)
-        for (let i = 0; i < 6; i++) {
-            ctxN.drawImage(imgs[queue[i]],0,i*60)
+        for (let i = 0; i < 9; i++) {
+            if (queue[i] == '|') {
+                ctxN.beginPath()
+                ctxN.moveTo(0, i*60)
+                ctxN.lineTo(90, i*60)
+                ctxN.stroke()
+                temp = true
+            } else {
+                j = i
+                if (temp) j--
+                ctxN.drawImage(imgs[queue[i]],0,j*60)
+            }
         }
         if(holdP) ctxH.drawImage(imgs[holdP],0,0)
     }
