@@ -1,4 +1,4 @@
-#zztetris
+# zztetris
 
 a tetris client with a name that starts with zz so you can type zz and have it autocomplete
 
