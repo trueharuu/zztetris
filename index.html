@@ -15,7 +15,7 @@
     }
 </style>
 <head>
-    <title>tetris</title>
+    <title>zztetris</title>
 </head>
 <body style="background-color:#222; color: #FFF;">
     <div style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); display:flex;">
@@ -35,7 +35,7 @@
         </div>
     </div>
     <div>
-        <button onclick="window.open('https\:\/\/github.com/aznguymp4/schoolTeto#readme')">About + FAQ</button>
+        <button onclick="window.open('https\:\/\/github.com/swng/zztetris#readme')">About</button>
     </div>
     <div>
         <button target="popup" onclick="ctrlsPopup()">Game Settings</button>
@@ -265,7 +265,7 @@ function rgb2hsv(r,g,b) {
 }
 
 function nearestColor(h,s,v) {
-    if (s<=.2 && v/2.55>=40) return 'G'
+    if (s<=.2 && v/2.55>=25) return 'G'
     if (v/2.55<=40) return '.'
 
     if (inRange(h,0,16) || inRange(h,325,360)) return 'Z'
@@ -273,8 +273,8 @@ function nearestColor(h,s,v) {
     else if (inRange(h,45,70)) return 'O'
     else if (inRange(h,70,150)) return 'S'
     else if (inRange(h,150,200)) return 'I'
-    else if (inRange(h,200,260)) return 'J'
-    else if (inRange(h,260,325)) return 'T'
+    else if (inRange(h,200,265)) return 'J'
+    else if (inRange(h,265,325)) return 'T'
     return '.'
 }
 
