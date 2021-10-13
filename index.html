@@ -814,7 +814,7 @@
 			if (mini) text += 'MINI ';
 			if (tspin) text += 'T-SPIN ';
 			if (cleared > 4) cleared = 4; // nani
-			if (tspin) text += ['NULL', 'SINGLE', 'DOUBLE', 'TRIPLE', 'QUAD'][cleared];
+			if (cleared > 0) text += ['NULL', 'SINGLE', 'DOUBLE', 'TRIPLE', 'QUAD'][cleared];
 			if (pc) text = 'PERFECT\nCLEAR!';
 
 			if (text != '') notify(text);
