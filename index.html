@@ -33,6 +33,12 @@
             <hr>
             <canvas id="n" width="90" height="360"></canvas>
         </div>
+        <div>
+            <button onclick="shuffleQueue()">Shuffle Queue</button>
+        </div>
+        <div>
+            <button onclick="shuffleQueuePlusHold()">Shuffle Queue + Hold</button>
+        </div>
     </div>
     <div>
         <button onclick="window.open('https\:\/\/github.com/swng/zztetris#readme')">About</button>
@@ -232,20 +238,7 @@ async function importImage() {
             yPOS = spawn[1]
             updateGhost()
 
-            histPos++
-            hist[histPos] = {
-                "board": JSON.parse(JSON.stringify(board)),
-                "queue": JSON.parse(JSON.stringify(queue)),
-                "hold": holdP,
-                "piece": piece
-            }
-            if (histPos > 100) {
-                histPos = 100
-                hist.shift()
-            }
-            while (histPos < hist.length-1) { // remove future history if it exists
-                hist.pop()
-            }
+            updateHistory()
         };
         
         var URLObj = window.URL || window.webkitURL;
@@ -291,6 +284,10 @@ async function importFumen() {
     yPOS = spawn[1]
     updateGhost()
 
+    updateHistory()
+}
+
+function updateHistory() {
     histPos++
     hist[histPos] = {
         "board": JSON.parse(JSON.stringify(board)),
@@ -305,6 +302,147 @@ async function importFumen() {
     while (histPos < hist.length-1) { // remove future history if it exists
         hist.pop()
     }
+}
+
+
+function notify(text) {
+    const inANIM  = "animate__animated animate__bounceIn"
+    const outANIM = "animate__animated animate__fadeOutDown"
+    notf.removeClass(inANIM); notf.removeClass(outANIM)
+    notf.html(text)
+    notf.addClass(inANIM)
+    setTimeout(() => {
+        notf.removeClass(inANIM)
+        notf.addClass(outANIM)
+    },1000)
+}
+
+function checkTopOut() {
+    p = pieces[piece][rot]
+    for (r = 0; r < p.length; r++) {
+        for (c = 0; c < p[0].length; c++) {
+            if (p[r][c] != 0) {
+                if (board[r + yPOS][c + xPOS].t != 0) {
+                    notify("TOP OUT")
+                }
+            }
+        }
+    }
+}
+
+function setShape(hd) {
+    var p = pieces[piece][rot]
+    p.map((r,i) => {
+        r.map((c,ii) => {
+            var rowG = board[i+yGHO]
+            if(c==1 && rowG && rowG[ii+xGHO]) rowG[ii+xGHO] = {t:3,c:piece}
+            var rowP = board[i+yPOS]
+            if(c==1 && rowP && rowP[ii+xPOS]) rowP[ii+xPOS] = {t:hd?1:2,c:piece}
+        })
+    })
+    //render()
+}
+
+function clearActive() {
+    board.map((r,i) => {
+        r.map((c,ii) => {
+            if(c.t==2 || c.t==3 && board[i][ii]) {board[i][ii].t=0; board[i][ii].c=''}
+        })
+    })
+}
+
+function newPiece() {
+    while (queue.length<10) {
+        var shuf = names.shuffle()
+        shuf.map(p => queue.push(p))
+        queue.push('|')
+    }
+    xPOS = spawn[0]
+    yPOS = spawn[1]
+    rot = 0
+    if (queue[0] == '|') queue.shift()
+    piece = queue.shift()
+    checkTopOut()
+    updateQueue()
+    updateGhost()
+    setShape()
+}
+
+function updateQueue() {
+    temp = false
+    ctxN.clearRect(0,0,90,360)
+    ctxH.clearRect(0,0,90,60)
+    for (let i = 0; i < 9; i++) {
+        if (queue[i] == '|') {
+            ctxN.beginPath()
+            ctxN.moveTo(0, i*60)
+            ctxN.lineTo(90, i*60)
+            ctxN.stroke()
+            temp = true
+        } else {
+            j = i
+            if (temp) j--
+            ctxN.drawImage(imgs[queue[i]],0,j*60)
+        }
+    }
+    if(holdP) ctxH.drawImage(imgs[holdP],0,0)
+}
+
+function shuffleQueue() {
+    // locate bag separator
+    index = 0;
+    while (index < queue.length && queue[index] != '|') index++;
+
+    tempQueue = queue.slice(0, index).concat(piece).shuffle().concat('|');
+    // the queue before the bag separator (the current bag), plus active piece; shuffle it; add bag separator to end
+    piece = tempQueue.shift();
+    queue = tempQueue;
+
+    while (queue.length<10) {
+        var shuf = names.shuffle()
+        shuf.map(p => queue.push(p))
+        queue.push('|')
+    }
+    xPOS = spawn[0]
+    yPOS = spawn[1]
+    rot = 0
+    clearActive()
+    checkTopOut()
+    updateQueue()
+    updateGhost()
+    setShape()
+    updateHistory();
+
+}
+
+function shuffleQueuePlusHold() {
+    if (!holdP) {
+        shuffleQueue();
+        return;
+    }
+
+    index = 0;
+    while (index < queue.length && queue[index] != '|') index++;
+
+    tempQueue = queue.slice(0, index).concat(piece, holdP).shuffle().concat('|');  
+    holdP = tempQueue.shift();
+    piece = tempQueue.shift();
+    queue = tempQueue;
+
+    while (queue.length<10) {
+        var shuf = names.shuffle()
+        shuf.map(p => queue.push(p))
+        queue.push('|')
+    }
+    xPOS = spawn[0]
+    yPOS = spawn[1]
+    rot = 0
+    clearActive()
+    checkTopOut()
+    updateQueue()
+    updateGhost()
+    setShape()
+    updateHistory();
 }
 
 function canMove(p,x,y) {
@@ -535,20 +673,7 @@ function callback() {
         checkLines()
         newPiece()
 
-        histPos++
-        hist[histPos] = {
-            "board": JSON.parse(JSON.stringify(board)),
-            "queue": JSON.parse(JSON.stringify(queue)),
-            "hold": holdP,
-            "piece": piece
-        }
-        if (histPos > 100) { // 100 history seems reasonable
-            histPos = 100
-            hist.shift()
-        }
-        while (histPos < hist.length-1) { // remove future history if it exists
-            hist.pop()
-        }
+        updateHistory()
     }
 
     function hold() {
@@ -569,82 +694,6 @@ function callback() {
         updateGhost()
         setShape()
         updateQueue()
-    }
-
-    function checkTopOut() {
-        p = pieces[piece][rot]
-        for (r = 0; r < p.length; r++) {
-            for (c = 0; c < p[0].length; c++) {
-                if (p[r][c] != 0) {
-                    if (board[r + yPOS][c + xPOS].t != 0) {
-                        notify("TOP OUT")
-                    }
-                }
-            }
-        }
-    }
-
-    function newPiece() {
-        while (queue.length<10) {
-            var shuf = names.shuffle()
-            shuf.map(p => queue.push(p))
-            queue.push('|')
-        }
-        xPOS = spawn[0]
-        yPOS = spawn[1]
-        rot = 0
-        if (queue[0] == '|') queue.shift()
-        piece = queue.shift()
-        checkTopOut()
-        updateQueue()
-        updateGhost()
-        setShape()
-    }
-
-    function updateQueue() {
-        temp = false
-        ctxN.clearRect(0,0,90,360)
-        ctxH.clearRect(0,0,90,60)
-        for (let i = 0; i < 9; i++) {
-            if (queue[i] == '|') {
-                ctxN.beginPath()
-                ctxN.moveTo(0, i*60)
-                ctxN.lineTo(90, i*60)
-                ctxN.stroke()
-                temp = true
-            } else {
-                j = i
-                if (temp) j--
-                ctxN.drawImage(imgs[queue[i]],0,j*60)
-            }
-        }
-        if(holdP) ctxH.drawImage(imgs[holdP],0,0)
-    }
-
-
-    function setShape(hd) {
-        var p = pieces[piece][rot]
-        p.map((r,i) => {
-            r.map((c,ii) => {
-                var rowG = board[i+yGHO]
-                if(c==1 && rowG && rowG[ii+xGHO]) rowG[ii+xGHO] = {t:3,c:piece}
-                var rowP = board[i+yPOS]
-                if(c==1 && rowP && rowP[ii+xPOS]) rowP[ii+xPOS] = {t:hd?1:2,c:piece}
-            })
-        })
-        //render()
-    }
-
-    function notify(text) {
-        const inANIM  = "animate__animated animate__bounceIn"
-        const outANIM = "animate__animated animate__fadeOutDown"
-        notf.removeClass(inANIM); notf.removeClass(outANIM)
-        notf.html(text)
-        notf.addClass(inANIM)
-        setTimeout(() => {
-            notf.removeClass(inANIM)
-            notf.addClass(outANIM)
-        },1000)
     }
 
     function checkLines() {
@@ -671,14 +720,6 @@ function callback() {
                 break;
         }
         if(board[board.length-1].filter(c => c.t==0).length==boardSize[0]) {notify('PERFECT\nCLEAR!'); playSnd('PerfectClear',1)}
-    }
-
-    function clearActive() {
-        board.map((r,i) => {
-            r.map((c,ii) => {
-                if(c.t==2 || c.t==3 && board[i][ii]) {board[i][ii].t=0; board[i][ii].c=''}
-            })
-        })
     }
 
     function drawCell(x,y,piece,type) {
