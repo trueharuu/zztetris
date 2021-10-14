@@ -208,10 +208,42 @@
 		i.src = imgs[k];
 	});
 
+    rect = document.getElementById('b').getBoundingClientRect();
+    mouseY = 0; // which cell on the board the mouse is over
+    mouseX = 0;
+    mouseDown = false;
+    isErasing = true;
+
+	document.getElementById('b').onmousemove = function mousemove(e) {
+        y = Math.floor((e.clientY - rect.top - 18) / cellSize);
+        x = Math.floor((e.clientX - rect.left - 18) / cellSize);
+
+        mouseY = y;
+        mouseX = x;
+
+       if (mouseDown) {
+           if (isErasing) {
+            board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = {t: 0, c: ''}
+           } else {
+            board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = {t: 1, c: 'X'}
+           }
+       }
+	};
+
+	document.onmousedown = function evbutton1() {
+		mouseDown = true;
+        isErasing = (board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]["t"] == 1)
+	};
+
+	document.onmouseup = function evbutton0() {
+        mouseDown = false;
+	};
+
 	function exportFumen() {
 		fumen = encode(board);
 		console.log(fumen);
 		navigator.clipboard.writeText(fumen);
+        // window.open('https://harddrop.com/fumen/?' + fumen, '_blank');
 	}
 
 	async function importImage() {
@@ -290,7 +322,7 @@
 	}
 
 	function nearestColor(h, s, v) {
-		if (inRange(h, 0, 30) && inRange(s, 0, 1) && (inRange(v, 133, 135) || inRange(v, 65, 85))) return 'X'; // attempted manual override specifically for four.lol idk
+		if (inRange(h, 0, 30) && inRange(s, 0, 1) && (inRange(v, 133, 135) || inRange(v, 63, 88))) return 'X'; // attempted manual override specifically for four.lol idk
 		if (inRange(h, 220, 225) && inRange(s, 0, 0.2) && v == 65) return '.';
 
 		if (s <= 0.2 && v / 2.55 >= 55) return 'X';
@@ -299,8 +331,8 @@
 		if (inRange(h, 0, 16) || inRange(h, 325, 360)) return 'Z';
 		else if (inRange(h, 16, 37)) return 'L';
 		else if (inRange(h, 37, 70)) return 'O';
-		else if (inRange(h, 70, 150)) return 'S';
-		else if (inRange(h, 150, 200)) return 'I';
+		else if (inRange(h, 70, 149)) return 'S';
+		else if (inRange(h, 149, 200)) return 'I';
 		else if (inRange(h, 200, 266)) return 'J';
 		else if (inRange(h, 266, 325)) return 'T';
 		return '.';
