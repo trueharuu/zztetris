@@ -28,7 +28,7 @@ window.decode = function decode(fumen) {
             colorIndex = input[index];
             if (colorIndex == 0) row.push({ t: 0, c: '' });
             else {
-                letter = " ILOZTJSG"[colorIndex]
+                letter = " ILOZTJSX"[colorIndex]
                 row.push({t: 1, c: letter})
             }
 		}

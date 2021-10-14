@@ -103,7 +103,7 @@
 		J: '#05F',
 		T: '#C3F',
 		A: '#2A2A2A',
-		G: '#999999',
+		X: '#999999',
 	};
 	var imgs = {
 		grid: './grid.png',
@@ -288,10 +288,10 @@
 	}
 
 	function nearestColor(h, s, v) {
-		if (inRange(h, 0, 30) && inRange(s, 0, 1) && inRange(v, 133, 135)) return 'G'; // attempted manual override specifically for four.lol idk
+		if (inRange(h, 0, 30) && inRange(s, 0, 1) && inRange(v, 133, 135)) return 'X'; // attempted manual override specifically for four.lol idk
 		if (inRange(h, 220, 225) && inRange(s, 0, 0.2) && v == 65) return '.';
 
-		if (s <= 0.2 && v / 2.55 >= 55) return 'G';
+		if (s <= 0.2 && v / 2.55 >= 55) return 'X';
 		if (v / 2.55 <= 55) return '.';
 
 		if (inRange(h, 0, 16) || inRange(h, 325, 360)) return 'Z';
