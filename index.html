@@ -208,42 +208,54 @@
 		i.src = imgs[k];
 	});
 
-    rect = document.getElementById('b').getBoundingClientRect();
-    mouseY = 0; // which cell on the board the mouse is over
-    mouseX = 0;
-    mouseDown = false;
-    isErasing = true;
+	rect = document.getElementById('b').getBoundingClientRect();
+	mouseY = 0; // which cell on the board the mouse is over
+	mouseX = 0;
+	mouseDown = false;
+	isErasing = true;
+    movingCoordinates = false;
 
 	document.getElementById('b').onmousemove = function mousemove(e) {
-        y = Math.floor((e.clientY - rect.top - 18) / cellSize);
-        x = Math.floor((e.clientX - rect.left - 18) / cellSize);
+		y = Math.floor((e.clientY - rect.top - 18) / cellSize);
+		x = Math.floor((e.clientX - rect.left - 18) / cellSize);
 
-        mouseY = y;
-        mouseX = x;
+        movingCoordinates = (y != mouseY || x != mouseX);
 
-       if (mouseDown) {
-           if (isErasing) {
-            board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = {t: 0, c: ''}
-           } else {
-            board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = {t: 1, c: 'X'}
-           }
-       }
+		mouseY = y;
+		mouseX = x;
+
+		if (mouseDown && movingCoordinates) {
+			if (!isErasing) {
+				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 0, c: '' };
+			} else {
+				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 1, c: 'X' };
+			}
+		}
 	};
 
 	document.onmousedown = function evbutton1() {
+		if (!mouseDown) {
+            movingCoordinates = false;
+			isErasing = board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]['t'] == 1;
+			if (isErasing) {
+				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 0, c: '' };
+			} else {
+				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 1, c: 'X' };
+			}
+		}
 		mouseDown = true;
-        isErasing = (board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]["t"] == 1)
+		isErasing = board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]['t'] == 1;
 	};
 
 	document.onmouseup = function evbutton0() {
-        mouseDown = false;
+		mouseDown = false;
 	};
 
 	function exportFumen() {
 		fumen = encode(board);
 		console.log(fumen);
 		navigator.clipboard.writeText(fumen);
-        // window.open('https://harddrop.com/fumen/?' + fumen, '_blank');
+		// window.open('https://harddrop.com/fumen/?' + fumen, '_blank');
 	}
 
 	async function importImage() {
