@@ -212,43 +212,105 @@
 	mouseY = 0; // which cell on the board the mouse is over
 	mouseX = 0;
 	mouseDown = false;
-	isErasing = true;
-    movingCoordinates = false;
+	drawMode = true;
+	movingCoordinates = false;
 
 	document.getElementById('b').onmousemove = function mousemove(e) {
 		y = Math.floor((e.clientY - rect.top - 18) / cellSize);
 		x = Math.floor((e.clientX - rect.left - 18) / cellSize);
 
-        movingCoordinates = (y != mouseY || x != mouseX);
+		movingCoordinates = y != mouseY || x != mouseX;
 
 		mouseY = y;
 		mouseX = x;
 
 		if (mouseDown && movingCoordinates) {
-			if (!isErasing) {
+			if (!drawMode) {
 				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 0, c: '' };
 			} else {
 				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 1, c: 'X' };
 			}
+			updateGhost();
 		}
 	};
 
-	document.onmousedown = function evbutton1() {
+	document.onmousedown = function mousedown(e) {
+		mouseY = Math.floor((e.clientY - rect.top - 18) / cellSize);
+		mouseX = Math.floor((e.clientX - rect.left - 18) / cellSize);
+
 		if (!mouseDown) {
-            movingCoordinates = false;
-			isErasing = board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]['t'] == 1;
-			if (isErasing) {
+			movingCoordinates = false;
+			drawMode = board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]['t'] == 1;
+			if (drawMode) {
 				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 0, c: '' };
 			} else {
 				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 1, c: 'X' };
 			}
+			updateGhost();
 		}
 		mouseDown = true;
-		isErasing = board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]['t'] == 1;
+		drawMode = board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]['t'] == 1;
 	};
 
-	document.onmouseup = function evbutton0() {
+	document.onmouseup = function mouseup() {
 		mouseDown = false;
+
+		if (drawMode) {
+			// compare board with hist[histPos]['board'] and attempt to autocolor
+			drawn = [];
+			oldBoard = hist[histPos]['board'];
+			board.map((r, i) => {
+				r.map((c, ii) => {
+					if (c.c == 'X' && oldBoard[i][ii].c != 'X') drawn.push({ y: i, x: ii });
+				});
+			});
+			if (drawn.length == 4) {
+				// try to determine which tetramino was drawn
+				// first entry should be the topleft one
+
+				names.forEach((name) => {
+					// jesus christ this is a large number of nested loops
+					checkPiece = pieces[name];
+					checkPiece.forEach((rot) => {
+						for (y = 0; y <= 2; y++) {
+							for (x = 0; x <= 2; x++) {
+								matches = 0;
+								for (row = 0; row < 4; row++) {
+									for (col = 0; col < 4; col++) {
+										if (rot[row][col] == 1) {
+											checkY = row + drawn[0].y - y;
+											checkX = col + drawn[0].x - x;
+											drawn.forEach((coordinate) => {
+												if (coordinate.x == checkX && coordinate.y == checkY) {
+													matches++;
+												}
+											});
+										}
+									}
+								}
+								if (matches == 4) {
+									// that's a match
+									drawn.forEach((coordinate) => {
+										board[coordinate.y][coordinate.x].c = name;
+									});
+								}
+							}
+						}
+					});
+				});
+			}
+		}
+
+		if (
+			hist[histPos] !=
+			{
+				board: JSON.parse(JSON.stringify(board)),
+				queue: JSON.parse(JSON.stringify(queue)),
+				hold: holdP,
+				piece: piece,
+			}
+		)
+			updateHistory();
 	};
 
 	function exportFumen() {
