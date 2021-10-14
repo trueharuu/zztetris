@@ -266,7 +266,7 @@
 
 						xPOS = spawn[0];
 						yPOS = spawn[1];
-                        rot = 0;
+						rot = 0;
 						clearActive();
 						updateGhost();
 						setShape();
@@ -313,11 +313,11 @@
 	async function importFumen() {
 		fumen = await navigator.clipboard.readText();
 		result = decode(fumen);
-		board = result;
+		board = JSON.parse(JSON.stringify(result));
 
 		xPOS = spawn[0];
 		yPOS = spawn[1];
-        rot = 0;
+		rot = 0;
 		clearActive();
 		updateGhost();
 		setShape();
