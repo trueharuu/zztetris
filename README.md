@@ -8,7 +8,7 @@ inspired by fio's four-tris
 
 ---
 
-Fumen import/export / image import works through your clipboard.
-Undo/redo is a thing.
-Queue is a global variable so you can edit it in console i g
+Fumen import/export / image import works through your clipboard.  
+Undo/redo is a thing.  
+Queue is a global variable so you can edit it in console i g  
 Drawing on the board is a thing.
