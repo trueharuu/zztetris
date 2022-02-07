@@ -457,7 +457,7 @@ async function importImage() {
                             medianG = median(minoPixelsG);
                             medianB = median(minoPixelsB);
                             var hsv = rgb2hsv(medianR, medianG, medianB);
-                            //console.log(hsv, nearestColor(hsv[0], hsv[1], hsv[2])); // debugging purposes
+                            console.log(hsv, nearestColor(hsv[0], hsv[1], hsv[2])); // debugging purposes
                             nDat.push(nearestColor(hsv[0], hsv[1], hsv[2]));
 
                             
@@ -518,8 +518,8 @@ function nearestColor(h, s, v) {
 	if (v / 2.55 <= 55) return '.';
 
 	if (inRange(h, 0, 16) || inRange(h, 325, 360)) return 'Z';
-	else if (inRange(h, 16, 36.5)) return 'L';
-	else if (inRange(h, 36.5, 70)) return 'O';
+	else if (inRange(h, 16, 41)) return 'L';
+	else if (inRange(h, 41, 70)) return 'O';
 	else if (inRange(h, 70, 149)) return 'S';
 	else if (inRange(h, 149, 200)) return 'I';
 	else if (inRange(h, 200, 266)) return 'J';
