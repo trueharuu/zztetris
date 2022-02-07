@@ -294,6 +294,30 @@ function paintbucketColor() {
 	}
 }
 
+document.getElementById('n').addEventListener('click', event => {
+    let QueueInput = prompt("Queue", queue.join('')).toUpperCase();
+    // ok there's probably a regex way to do this but...
+    temp = [];
+    for (i = 0; i < QueueInput.length; i++) { //sanitization
+        if ("SZLJIOT".includes(QueueInput[i])) temp.push(QueueInput[i]);
+    }
+    if (temp.length > 0) {
+        temp.push('|'); // could probably insert one every 7 pieces but am too lazy
+        queue = temp;
+        updateQueue();
+    }
+});
+
+document.getElementById('h').addEventListener('click', event => {
+    let HoldInput = prompt("Hold", holdP).toUpperCase();
+    HoldInput = HoldInput[0]; // make sure it's just 1 character
+    //sanitization
+    if ("SZLJIOT".includes(HoldInput)) {
+        holdP = HoldInput;
+        updateQueue();
+    }
+});
+
 // import/export stuff
 
 async function importTetrio() {
@@ -430,7 +454,7 @@ async function importImage() {
                             medianG = median(minoPixelsG);
                             medianB = median(minoPixelsB);
                             var hsv = rgb2hsv(medianR, medianG, medianB);
-                            //console.log(hsv, nearestColor(hsv[0], hsv[1], hsv[2]));
+                            //console.log(hsv, nearestColor(hsv[0], hsv[1], hsv[2])); // debugging purposes
                             nDat.push(nearestColor(hsv[0], hsv[1], hsv[2]));
 
                             
