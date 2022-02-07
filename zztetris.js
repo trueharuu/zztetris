@@ -43,6 +43,18 @@ const color = {
 	A: '#2A2A2A',
 	X: '#999999',
 };
+const reversed = {
+    Z: 'S',
+    L: 'J',
+    O: 'O',
+    S: 'Z',
+    I: 'I',
+    J: 'L',
+    T: 'T',
+    A: 'A',
+    X: 'X',
+    '|': '|'
+};
 var imgs = {
 	grid: './grid.png',
 	Z: './pieceSprite/z.png',
@@ -99,6 +111,7 @@ const rotDir = {
 };
 var sfxCache = {};
 var charging = false;
+var charged = false;
 var board = [];
 var queue = [];
 var piece = '';
@@ -146,6 +159,29 @@ keys.map((k, idx) => {
 	i.src = imgs[k];
 });
 
+// Keys
+var keysDown;
+var lastKeys;
+
+var flags = {
+	HD: 1,
+	R: 2,
+	L: 4,
+	SD: 8,
+	HL: 16,
+	CW: 32,
+	CCW: 64,
+	R180: 128,
+	UNDO: 256,
+	REDO: 512,
+	RE: 1024,
+};
+
+var shiftDir = 0;
+var shiftReleased = true;
+var shiftDelay;
+var arrDelay;
+
 // mouse stuff for drawing
 
 mouseY = 0; // which cell on the board the mouse is over
@@ -169,7 +205,7 @@ document.getElementById('b').onmousemove = function mousemove(e) {
 			if (!drawMode) {
 				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 0, c: '' };
 			} else {
-				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 1, c: 'X' };
+				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 1, c: paintbucketColor() };
 			}
 			updateGhost();
 		}
@@ -187,8 +223,8 @@ document.getElementById('b').onmousedown = function mousedown(e) {
 			drawMode = board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]['t'] == 1;
 			if (drawMode) {
 				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 0, c: '' };
-			} else {
-				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 1, c: 'X' };
+            } else {
+				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 1, c: paintbucketColor() };
 			}
 			updateGhost();
 		}
@@ -209,7 +245,7 @@ document.onmouseup = function mouseup() {
 				if (c.c == 'X' && oldBoard[i][ii].c != 'X') drawn.push({ y: i, x: ii });
 			});
 		});
-		if (drawn.length == 4) {
+		if (drawn.length == 4 && paintbucketColor() == 'X') {
 			// try to determine which tetramino was drawn
 			// first entry should be the topleft one
 
@@ -258,13 +294,97 @@ document.onmouseup = function mouseup() {
 		updateHistory();
 };
 
+function paintbucketColor() {
+    for (i = 0; i < document.paintbucket.length; i++) {
+        if (document.paintbucket[i].checked) {
+            return document.paintbucket[i].id;
+        }
+    }
+}
+
 // import/export stuff
+
+async function importTetrio() {
+    temp = await navigator.clipboard.readText();
+    convert = {
+        "#": "G",
+        z: "Z",
+        s: "S",
+        l: "L",
+        j: "J",
+        t: "T",
+        i: "I",
+        o: "O"
+    };
+    temp2 = temp.split('?');
+    if (temp2[0].length != 400) { console.log("bad input"); return; } // bad input
+    if (temp2.length > 2) holdP = temp2[2]
+    if (temp2.length > 1) {
+        temp3 = temp2[1].split("");
+        for (i = 0; i < temp3.length; i++) {
+            temp3[i] = convert[temp3[i]];
+        }
+        queue = temp3;
+    }
+    //board
+    for (i = 0; i < 400; i++) {
+        temp4 = temp2[0][i];
+        if (temp4 == "_") board[Math.floor(i / 10)][i % 10] = { t: 0, c: '' };
+        else board[Math.floor(i / 10)][i % 10] = { t: 1, c: convert[temp4] };
+    }
+    console.log("hi")
+
+    xPOS = spawn[0];
+	yPOS = spawn[1];
+	rot = 0;
+	clearActive();
+	updateGhost();
+	setShape();
+	updateHistory();
+    
+
+}
+
+function exportTetrio() {
+    convert = {
+        G: "#",
+        Z: "z",
+        S: "s",
+        L: "l",
+        J: "j",
+        T: "t",
+        I: "i",
+        O: "o"
+    }
+    result = "";
+    for (row = 0; row < board.length; row++) {
+        for (col = 0; col < board[0].length; col++) {
+            if (board[row][col].t == 1) {
+                result += convert[board[row][col].c];
+            } else result += "_";
+        }
+    }
+    result += "?" + convert[piece];
+    for (i = 0; i < queue.length; i++){
+        if (queue[i] != "|") result += convert[queue[i]];
+    }
+    if (holdP) result += "?" + convert[holdP];
+
+    console.log(result);
+    navigator.clipboard.writeText(result);
+}
 
 function exportFumen() {
 	fumen = encode(board);
 	console.log(fumen);
 	navigator.clipboard.writeText(fumen);
 	// window.open('https://harddrop.com/fumen/?' + fumen, '_blank');
+}
+
+function exportFullFumen() {
+    fumen = fullEncode(hist);
+    console.log(fumen);
+    navigator.clipboard.writeText(fumen);
 }
 
 async function importImage() {
@@ -350,8 +470,8 @@ function nearestColor(h, s, v) {
 	if (v / 2.55 <= 55) return '.';
 
 	if (inRange(h, 0, 16) || inRange(h, 325, 360)) return 'Z';
-	else if (inRange(h, 16, 37)) return 'L';
-	else if (inRange(h, 37, 70)) return 'O';
+	else if (inRange(h, 16, 36.5)) return 'L';
+	else if (inRange(h, 36.5, 70)) return 'O';
 	else if (inRange(h, 70, 149)) return 'S';
 	else if (inRange(h, 149, 200)) return 'I';
 	else if (inRange(h, 200, 266)) return 'J';
@@ -377,6 +497,69 @@ async function importFumen() {
 	updateHistory();
 }
 
+async function importFullFumen() {
+    fumen = await navigator.clipboard.readText();
+    result = fullDecode(fumen, hist[histPos]); // let's import boards but just keep current queue/hold/piece in each frame
+    hist = result;
+    histPos = 0;
+    board = JSON.parse(JSON.stringify(hist[0]['board']));
+    xPOS = spawn[0];
+	yPOS = spawn[1];
+	rot = 0;
+	clearActive();
+	updateGhost();
+	setShape();
+    
+}
+
+function mirror() {
+    for (row = 0; row < board.length; row++) {
+        board[row].reverse();
+        for (i = 0; i < board[row].length; i++) {
+            if (board[row][i].t == 1) board[row][i].c = reversed[board[row][i].c];
+        }
+    }
+    for (i = 0; i < queue.length; i++) {
+        queue[i] = reversed[queue[i]];
+    }
+    holdP = reversed[holdP];
+    piece = reversed[piece];
+
+    xPOS = spawn[0];
+	yPOS = spawn[1];
+	rot = 0;
+	clearActive();
+    updateGhost();
+    updateQueue();
+	setShape();
+	updateHistory();
+}
+
+function fullMirror() {
+    for (i = 0; i < hist.length; i++) {
+        tempBoard = hist[i]["board"];
+        for (row = 0; row < tempBoard.length; row++) {
+            tempBoard[row].reverse();
+            for (j = 0; j < tempBoard[row].length; j++) {
+                if (tempBoard[row][j].t == 1) tempBoard[row][j].c = reversed[tempBoard[row][j].c];
+            }
+        }
+        for (j = 0; j < hist[i]["queue"].length; j++) {
+            hist[i]["queue"][j] = reversed[hist[i]["queue"][j]];
+        }
+
+        hist[i]["hold"] = reversed[hist[i]["hold"]];
+        hist[i]["piece"] = reversed[hist[i]["piece"]];
+    }
+    board = JSON.parse(JSON.stringify(hist[histPos]['board']));
+    xPOS = spawn[0];
+	yPOS = spawn[1];
+	rot = 0;
+	clearActive();
+	updateGhost();
+	setShape();
+}
+
 function updateHistory() {
 	histPos++;
 	hist[histPos] = {
@@ -385,9 +568,9 @@ function updateHistory() {
 		hold: holdP,
 		piece: piece,
 	};
-	if (histPos > 100) {
-		histPos = 100;
-		hist.shift();
+    if (histPos > 1000) { // just in case hist is taking up too much memory
+        hist.splice(0, 100);
+		histPos -= 100;
 	}
 	while (histPos < hist.length - 1) {
 		// remove future history if it exists
@@ -470,6 +653,18 @@ function newPiece() {
 	updateQueue();
 	updateGhost();
 	setShape();
+
+	if (keysDown & flags.L) {
+		lastKeys = keysDown;
+		shiftDelay = DAS;
+		shiftReleased = false;
+		shiftDir = -1;
+	} else if (keysDown & flags.R) {
+		lastKeys = keysDown;
+		shiftDelay = DAS;
+		shiftReleased = false;
+		shiftDir = 1;
+	}
 }
 
 function notify(text) {
@@ -483,6 +678,59 @@ function notify(text) {
 		notf.removeClass(inANIM);
 		notf.addClass(outANIM);
 	}, 1000);
+}
+
+function undo() {
+	if (histPos > 0) {
+		histPos--;
+		board = JSON.parse(JSON.stringify(hist[histPos]['board']));
+		queue = JSON.parse(JSON.stringify(hist[histPos]['queue']));
+		holdP = hist[histPos]['hold'];
+		piece = hist[histPos]['piece'];
+
+		xPOS = spawn[0];
+		yPOS = spawn[1];
+		rot = 0;
+		clearActive();
+		updateGhost();
+		setShape();
+		updateQueue();
+	}
+}
+
+function redo() {
+	if (histPos < hist.length - 1) {
+		board = JSON.parse(JSON.stringify(hist[histPos + 1]['board']));
+		queue = JSON.parse(JSON.stringify(hist[histPos + 1]['queue']));
+		holdP = hist[histPos + 1]['hold'];
+		piece = hist[histPos + 1]['piece'];
+		histPos++;
+
+		xPOS = spawn[0];
+		yPOS = spawn[1];
+		rot = 0;
+		clearActive();
+		updateGhost();
+		setShape();
+		updateQueue();
+	}
+}
+
+function restart() {
+	board = [];
+	for (let i = 0; i < boardSize[1]; i++) {
+		board.push(aRow());
+	}
+	queue = [];
+	rot = 0;
+	piece = '';
+	holdP = '';
+	held = false;
+	xPOS = spawn[0];
+	yPOS = spawn[1];
+	xGHO = spawn[0];
+	yGHO = spawn[1];
+	newPiece();
 }
 
 function updateQueue() {
@@ -564,21 +812,18 @@ function shuffleQueuePlusHold() {
 function callback() {
 	pieces = SRSX.pieces;
 	kicks = SRSX.kicks;
+
+	keysDown = 0;
+	lastKeys = 0;
+	shiftDir = 0;
+	shiftReleased = true;
+
 	document.addEventListener('keydown', function (e) {
-		if (e.repeat) return;
 		const input = ctrl[e.code];
+		if (input) keysDown |= flags[input];
+		if (e.repeat) return;
 		if (input) {
 			switch (input) {
-				case 'L':
-					Ldn = true;
-					dasID++;
-					das('L', dasID);
-					break;
-				case 'R':
-					Rdn = true;
-					dasID++;
-					das('R', dasID);
-					break;
 				case 'SD':
 					sdID++;
 					softDrop(sdID);
@@ -598,79 +843,27 @@ function callback() {
 				case 'R180':
 					rotate('R180');
 					break;
-				case 'RE': // Restart
-					board = [];
-					for (let i = 0; i < boardSize[1]; i++) {
-						board.push(aRow());
-					}
-					queue = [];
-					rot = 0;
-					piece = '';
-					holdP = '';
-					held = false;
-					xPOS = spawn[0];
-					yPOS = spawn[1];
-					xGHO = spawn[0];
-					yGHO = spawn[1];
-					newPiece();
+				case 'RE':
+					restart();
 					break;
 				case 'UNDO':
-					if (histPos > 0) {
-						histPos--;
-						board = JSON.parse(JSON.stringify(hist[histPos]['board']));
-						queue = JSON.parse(JSON.stringify(hist[histPos]['queue']));
-						holdP = hist[histPos]['hold'];
-						piece = hist[histPos]['piece'];
-
-						xPOS = spawn[0];
-						yPOS = spawn[1];
-						rot = 0;
-						clearActive();
-						updateGhost();
-						setShape();
-						updateQueue();
-					}
+					undo();
 					break;
 				case 'REDO':
-					if (histPos < hist.length - 1) {
-						board = JSON.parse(JSON.stringify(hist[histPos + 1]['board']));
-						queue = JSON.parse(JSON.stringify(hist[histPos + 1]['queue']));
-						holdP = hist[histPos + 1]['hold'];
-						piece = hist[histPos + 1]['piece'];
-						histPos++;
-
-						xPOS = spawn[0];
-						yPOS = spawn[1];
-						rot = 0;
-						clearActive();
-						updateGhost();
-						setShape();
-						updateQueue();
-					}
+					redo();
+					break;
 			}
 		}
 	});
+
 	document.addEventListener('keyup', function (e) {
 		const input = ctrl[e.code];
 		if (input) {
-			switch (input) {
-				case 'SD':
-					sdID++;
-					break;
-				case 'L':
-					Ldn = false;
-					dasID++;
-					if (Rdn && !charging) {
-						das('R', dasID);
-					}
-					break;
-				case 'R':
-					Rdn = false;
-					dasID++;
-					if (Ldn && !charging) {
-						das('L', dasID);
-					}
-					break;
+			if (keysDown & flags[input]) keysDown ^= flags[input];
+			if (input == 'SD') sdID++;
+			if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
+				dasID++;
+				charged = false;
 			}
 		}
 	});
@@ -686,7 +879,7 @@ function callback() {
 	];
 	histPos = 0;
 	setInterval(() => {
-		move('SD');
+		if (!document.getElementById("grav").checked) move('SD');
 	}, 700);
 
 	function playSnd(sfx, overlap) {
@@ -747,9 +940,7 @@ function callback() {
 
 	function das(dir, id) {
 		move(dir);
-		charging = true;
-		setTimeout(() => {
-			charging = false;
+		if (charged) {
 			for (let i = 0; i < (ARR == 0 ? boardSize[0] : 1); i++) {
 				var looooop = setInterval(function () {
 					if (dasID == id) {
@@ -759,7 +950,22 @@ function callback() {
 					}
 				}, ARR);
 			}
-		}, DAS);
+		} else {
+			charging = true;
+			setTimeout(() => {
+				charging = false;
+				charged = true;
+				for (let i = 0; i < (ARR == 0 ? boardSize[0] : 1); i++) {
+					var looooop = setInterval(function () {
+						if (dasID == id) {
+							move(dir);
+						} else {
+							clearInterval(looooop);
+						}
+					}, ARR);
+				}
+			}, DAS);
+		}
 	}
 
 	function softDrop(id) {
@@ -782,6 +988,95 @@ function callback() {
 					clearInterval(loop);
 				}
 			}, 0);
+		}
+	}
+
+	function checkShift() {
+		// moving left/right with DAS and whatever
+		// just pressed
+		if (keysDown & flags.L && !(lastKeys & flags.L)) {
+			shiftDelay = 0;
+			arrDelay = 0;
+			shiftReleased = true;
+			shiftDir = -1;
+
+			dasID++;
+			das('L', dasID);
+		}
+		if (keysDown & flags.R && !(lastKeys & flags.R)) {
+			shiftDelay = 0;
+			arrDelay = 0;
+			shiftReleased = true;
+			shiftDir = 1;
+
+			dasID++;
+			das('R', dasID);
+		}
+
+		// just released
+		else if (!(keysDown & flags.R) && lastKeys & flags.R && keysDown & flags.L) {
+			shiftDir = -1;
+
+			dasID++;
+			das('L', dasID);
+		} else if (!(keysDown & flags.L) && lastKeys & flags.L && keysDown & flags.R) {
+			shiftDir = 1;
+
+			dasID++;
+			das('R', dasID);
+		} else if ((!(keysDown & flags.L) && lastKeys & flags.L) || (!(keysDown & flags.R) && lastKeys & flags.R)) {
+			shiftDelay = 0;
+			arrDelay = 0;
+			shiftReleased = true;
+			shiftDir = 0;
+
+			dasID++;
+			//charged = false;
+		} else if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
+			dasID++;
+			charged = false;
+		}
+
+		/*
+        
+		// Handle events
+		if (shiftDir) {
+			// 1. When key pressed instantly move over once.
+			if (shiftReleased) {
+				//shift(shiftDir);
+				if (shiftDir == -1) move('L');
+				if (shiftDir == 1) move('R');
+				shiftDelay++;
+				shiftReleased = false;
+				// 2. Apply DAS delay
+			} else if (shiftDelay < DAS) {
+				shiftDelay++;
+				// 3. Once the delay is complete, move over once.
+				//     Increment delay so this doesn't run again.
+			} else if (shiftDelay === DAS && DAS !== 0) {
+				//shift(shiftDir);
+				if (shiftDir == -1) move('L');
+				if (shiftDir == 1) move('R');
+				if (ARR !== 0) shiftDelay++;
+				// 4. Apply ARR delay
+			} else if (arrDelay < ARR) {
+				arrDelay++;
+				// 5. If ARR Delay is full, move piece, and reset delay and repeat.
+			} else if (arrDelay === ARR && ARR !== 0) {
+				//shift(shiftDir);
+				if (shiftDir == -1) move('L');
+				if (shiftDir == 1) move('R');
+			} else if (ARR === 0) {
+				for (let i = 0; i < 9; i++) {
+					if (shiftDir == -1) move('L');
+					if (shiftDir == 1) move('R');
+				}
+			}
+        }
+        */
+
+		if (lastKeys !== keysDown) {
+			lastKeys = keysDown;
 		}
 	}
 
@@ -809,6 +1104,7 @@ function callback() {
 			holdP = [piece, (piece = holdP)][0];
 		} else {
 			holdP = piece;
+			if (queue[0] == '|') queue.shift();
 			piece = queue.shift();
 		}
 		playSnd('Hold');
@@ -850,8 +1146,6 @@ function callback() {
 			}
 		}
 
-		if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) pc = true;
-
 		board = board.filter(
 			(r) =>
 				!r
@@ -866,6 +1160,8 @@ function callback() {
 			cleared++;
 			board.unshift(aRow());
 		}
+
+		if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) pc = true;
 
 		text = '';
 		if (mini) text += 'MINI ';
@@ -892,6 +1188,8 @@ function callback() {
 	}
 
 	function render() {
+		checkShift();
+
 		ctx.clearRect(0, 0, boardSize[0] * cellSize, boardSize[1] * cellSize);
 		ctx.fillStyle = pattern;
 		ctx.fillRect(0, 0, boardSize[0] * cellSize, boardSize[1] * cellSize);
@@ -906,9 +1204,12 @@ function callback() {
 				}
 			});
 		});
+		window.requestAnimationFrame(render);
 	}
-
+	/*
 	setInterval(() => {
 		render();
 	}, 0);
+    */
+	window.requestAnimationFrame(render);
 }

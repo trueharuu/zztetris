@@ -6,21 +6,7 @@
 	<script src="tetris-fumen.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 	<link rel="icon" href="./pieceSprite/z.png" />
-	<style>
-		@font-face {
-			font-family: Muro;
-			src: url('Muroslant.otf');
-		}
-		.queue {
-			text-align: center;
-			font-family: Muro;
-			font-size: 28px;
-			letter-spacing: 2px;
-		}
-		canvas {
-			vertical-align: top;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="/zztetris.css" />
 	<head>
 		<meta charset="UTF-8" />
 		<meta property="og:type" content="website" />
@@ -32,7 +18,7 @@
 		/>
 		<meta
 			property="og:image"
-			content="https://cdn.discordapp.com/attachments/209687919361916928/854247847918567444/output.png"
+			content="https://cdn.discordapp.com/attachments/209687919361916928/898230618012418088/unknown.png"
 		/>
 		<title>ZZTetris</title>
 	</head>
@@ -53,26 +39,66 @@
 				<canvas id="n" width="90" height="360"></canvas>
 			</div>
 			<div>
-				<button onclick="this.blur(); shuffleQueue();">Shuffle Queue</button>
+				<button class="button" onclick="this.blur(); shuffleQueue();">Shuffle Queue</button>
 			</div>
 			<div>
-				<button onclick="this.blur(); shuffleQueuePlusHold();">Shuffle Queue + Hold</button>
+				<button class="button" onclick="this.blur(); shuffleQueuePlusHold();">Shuffle Queue + Hold</button>
 			</div>
 		</div>
-		<div>
-			<button onclick="this.blur(); window.open('https\:\/\/github.com/swng/zztetris#readme')">About</button>
-		</div>
-		<div>
-			<button target="popup" onclick="ctrlsPopup()">Game Settings</button>
-		</div>
-		<div>
-			<button onclick="this.blur(); exportFumen()">Export Fumen</button>
-		</div>
-		<div>
-			<button onclick="this.blur(); importFumen()">Import Fumen</button>
-		</div>
-		<div>
-			<button onclick="this.blur(); importImage()">Import Image</button>
-		</div>
+		<button class="button" onclick="this.blur(); window.open('https\:\/\/github.com/swng/zztetris#readme')">
+			About
+		</button>
+		<button class="button" target="popup" onclick="ctrlsPopup()">Game Settings</button>
+		<div></div>
+		<button class="button" onclick="this.blur(); exportFumen()">Export Fumen</button>
+		<button class="button" onclick="this.blur(); importFumen()">Import Fumen</button>
+		<button class="button" onclick="this.blur(); importImage()">Import Image</button>
+        <button class="button" onclick="this.blur(); exportTetrio()">Export TETRIO</button>
+        <button class="button" onclick="this.blur(); importTetrio()">Import TETRIO</button>
+        <div></div>
+        <button class="button" onclick="this.blur(); exportFullFumen()">Export Full Fumen</button>
+        <button class="button" onclick="this.blur(); importFullFumen()">Import Full Fumen</button>
+		<div></div>
+        <button class="button" onclick="this.blur(); mirror()">Mirror</button>
+        <button class="button" onclick="this.blur(); fullMirror()">Full Mirror</button>
+
+
+		<form name="paintbucket">
+			<label for="X">
+				<input type="radio" name="paintbucket" class="paintbucket" id="X" value="X" checked />
+				<span></span>
+			</label>
+			<label for="I">
+				<input type="radio" name="paintbucket" class="paintbucket" id="I" value="I" />
+				<span></span>
+			</label>
+			<label for="J">
+				<input type="radio" name="paintbucket" class="paintbucket" id="J" value="J" />
+				<span></span>
+			</label>
+			<label for="S">
+				<input type="radio" name="paintbucket" class="paintbucket" id="S" value="S" />
+				<span></span>
+			</label>
+            <div></div>
+			<label for="O">
+				<input type="radio" name="paintbucket" class="paintbucket" id="O" value="O" />
+				<span></span>
+			</label>
+			<label for="Z">
+				<input type="radio" name="paintbucket" class="paintbucket" id="Z" value="Z" />
+				<span></span>
+			</label>
+			<label for="L">
+				<input type="radio" name="paintbucket" class="paintbucket" id="L" value="L" />
+				<span></span>
+			</label>
+			<label for="T">
+				<input type="radio" name="paintbucket" class="paintbucket" id="T" value="T" />
+				<span></span>
+			</label>
+            <div></div>
+		</form>
+        <input type="checkbox" id="grav"> <label for="grav">disable gravity</label>
 	</body>
 </html>
