@@ -38,7 +38,7 @@
     
     window.fullDecode = function fullDecode(fumen, oldHist) {
         pages = decoder.decode(fumen);
-        hist = [];
+        newHist = [];
         for (i = 0; i < pages.length; i++) {
             input = pages[i]['_field']['field']['pieces'];
             let tempBoard = new Array(17).fill(new Array(10).fill({ t: 0, c: '' })); // empty top 17 rows
@@ -55,14 +55,15 @@
                 }
                 tempBoard.push(row);
             }
-            hist.push({
+            newHist.push({
                 board: JSON.parse(JSON.stringify(tempBoard)),
                 queue: JSON.parse(JSON.stringify(oldHist['queue'])),
                 hold: oldHist['hold'],
                 piece: oldHist['piece']
-            });
+    
+            })
         }
-        return hist;
+        return newHist;
     };
     
     window.encode = function encode(board) {

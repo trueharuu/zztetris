@@ -44,16 +44,16 @@ const color = {
 	X: '#999999',
 };
 const reversed = {
-    Z: 'S',
-    L: 'J',
-    O: 'O',
-    S: 'Z',
-    I: 'I',
-    J: 'L',
-    T: 'T',
-    A: 'A',
-    X: 'X',
-    '|': '|'
+	Z: 'S',
+	L: 'J',
+	O: 'O',
+	S: 'Z',
+	I: 'I',
+	J: 'L',
+	T: 'T',
+	A: 'A',
+	X: 'X',
+	'|': '|',
 };
 var imgs = {
 	grid: './grid.png',
@@ -223,7 +223,7 @@ document.getElementById('b').onmousedown = function mousedown(e) {
 			drawMode = board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]['t'] == 1;
 			if (drawMode) {
 				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 0, c: '' };
-            } else {
+			} else {
 				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 1, c: paintbucketColor() };
 			}
 			updateGhost();
@@ -280,98 +280,91 @@ document.onmouseup = function mouseup() {
 				});
 			});
 		}
-	}
-
-	if (
-		hist[histPos] !=
-		{
-			board: JSON.parse(JSON.stringify(board)),
-			queue: JSON.parse(JSON.stringify(queue)),
-			hold: holdP,
-			piece: piece,
+		if (drawn.length != 0) {
+			updateHistory();
 		}
-	)
-		updateHistory();
+	}
 };
 
 function paintbucketColor() {
-    for (i = 0; i < document.paintbucket.length; i++) {
-        if (document.paintbucket[i].checked) {
-            return document.paintbucket[i].id;
-        }
-    }
+	for (i = 0; i < document.paintbucket.length; i++) {
+		if (document.paintbucket[i].checked) {
+			return document.paintbucket[i].id;
+		}
+	}
 }
 
 // import/export stuff
 
 async function importTetrio() {
-    temp = await navigator.clipboard.readText();
-    convert = {
-        "#": "G",
-        z: "Z",
-        s: "S",
-        l: "L",
-        j: "J",
-        t: "T",
-        i: "I",
-        o: "O"
-    };
-    temp2 = temp.split('?');
-    if (temp2[0].length != 400) { console.log("bad input"); return; } // bad input
-    if (temp2.length > 2) holdP = temp2[2]
-    if (temp2.length > 1) {
-        temp3 = temp2[1].split("");
-        for (i = 0; i < temp3.length; i++) {
-            temp3[i] = convert[temp3[i]];
-        }
-        queue = temp3;
-    }
-    //board
-    for (i = 0; i < 400; i++) {
-        temp4 = temp2[0][i];
-        if (temp4 == "_") board[Math.floor(i / 10)][i % 10] = { t: 0, c: '' };
-        else board[Math.floor(i / 10)][i % 10] = { t: 1, c: convert[temp4] };
-    }
-    console.log("hi")
+	temp = await navigator.clipboard.readText();
+	convert = {
+		'#': 'G',
+		z: 'Z',
+		s: 'S',
+		l: 'L',
+		j: 'J',
+		t: 'T',
+		i: 'I',
+		o: 'O',
+	};
+	temp2 = temp.split('?');
+	if (temp2[0].length != 400) {
+		console.log('bad input');
+		return;
+	} // bad input
+	if (temp2.length > 2) holdP = temp2[2];
+	if (temp2.length > 1) {
+		temp3 = temp2[1].split('');
+		for (i = 0; i < temp3.length; i++) {
+			temp3[i] = convert[temp3[i]];
+		}
+		queue = temp3;
+	}
+	//board
+	for (i = 0; i < 400; i++) {
+		temp4 = temp2[0][i];
+		if (temp4 == '_') board[Math.floor(i / 10)][i % 10] = { t: 0, c: '' };
+		else board[Math.floor(i / 10)][i % 10] = { t: 1, c: convert[temp4] };
+	}
+	console.log('hi');
 
-    xPOS = spawn[0];
+	xPOS = spawn[0];
 	yPOS = spawn[1];
 	rot = 0;
 	clearActive();
 	updateGhost();
 	setShape();
 	updateHistory();
-    
-
 }
 
 function exportTetrio() {
-    convert = {
-        G: "#",
-        Z: "z",
-        S: "s",
-        L: "l",
-        J: "j",
-        T: "t",
-        I: "i",
-        O: "o"
-    }
-    result = "";
-    for (row = 0; row < board.length; row++) {
-        for (col = 0; col < board[0].length; col++) {
-            if (board[row][col].t == 1) {
-                result += convert[board[row][col].c];
-            } else result += "_";
-        }
-    }
-    result += "?" + convert[piece];
-    for (i = 0; i < queue.length; i++){
-        if (queue[i] != "|") result += convert[queue[i]];
-    }
-    if (holdP) result += "?" + convert[holdP];
+	convert = {
+		G: '#',
+		Z: 'z',
+		S: 's',
+		L: 'l',
+		J: 'j',
+		T: 't',
+		I: 'i',
+		O: 'o',
+	};
+	result = '';
+	for (row = 0; row < board.length; row++) {
+		for (col = 0; col < board[0].length; col++) {
+			if (board[row][col].t == 1) {
+				result += convert[board[row][col].c];
+			} else result += '_';
+		}
+	}
+	result += '?' + convert[piece];
+	for (i = 0; i < queue.length; i++) {
+		if (queue[i] != '|') result += convert[queue[i]];
+	}
+	if (holdP) result += '?' + convert[holdP];
 
-    console.log(result);
-    navigator.clipboard.writeText(result);
+	console.log(result);
+	navigator.clipboard.writeText(result);
 }
 
 function exportFumen() {
@@ -382,9 +375,9 @@ function exportFumen() {
 }
 
 function exportFullFumen() {
-    fumen = fullEncode(hist);
-    console.log(fumen);
-    navigator.clipboard.writeText(fumen);
+	fumen = fullEncode(hist);
+	console.log(fumen);
+	navigator.clipboard.writeText(fumen);
 }
 
 async function importImage() {
@@ -498,61 +491,61 @@ async function importFumen() {
 }
 
 async function importFullFumen() {
-    fumen = await navigator.clipboard.readText();
-    result = fullDecode(fumen, hist[histPos]); // let's import boards but just keep current queue/hold/piece in each frame
-    hist = result;
-    histPos = 0;
-    board = JSON.parse(JSON.stringify(hist[0]['board']));
-    xPOS = spawn[0];
+	fumen = await navigator.clipboard.readText();
+	result = fullDecode(fumen, hist[histPos]); // let's import boards but just keep current queue/hold/piece in each frame
+	hist = JSON.parse(JSON.stringify(result));
+	histPos = 0;
+	board = JSON.parse(JSON.stringify(hist[0]['board']));
+	xPOS = spawn[0];
 	yPOS = spawn[1];
 	rot = 0;
 	clearActive();
 	updateGhost();
 	setShape();
-    
 }
 
 function mirror() {
-    for (row = 0; row < board.length; row++) {
-        board[row].reverse();
-        for (i = 0; i < board[row].length; i++) {
-            if (board[row][i].t == 1) board[row][i].c = reversed[board[row][i].c];
-        }
-    }
-    for (i = 0; i < queue.length; i++) {
-        queue[i] = reversed[queue[i]];
-    }
-    holdP = reversed[holdP];
-    piece = reversed[piece];
+	for (row = 0; row < board.length; row++) {
+		board[row].reverse();
+		for (i = 0; i < board[row].length; i++) {
+			if (board[row][i].t == 1) board[row][i].c = reversed[board[row][i].c];
+		}
+	}
+	for (i = 0; i < queue.length; i++) {
+		queue[i] = reversed[queue[i]];
+	}
+	holdP = reversed[holdP];
+	piece = reversed[piece];
 
-    xPOS = spawn[0];
+	xPOS = spawn[0];
 	yPOS = spawn[1];
 	rot = 0;
 	clearActive();
-    updateGhost();
-    updateQueue();
+	updateGhost();
+	updateQueue();
 	setShape();
 	updateHistory();
 }
 
 function fullMirror() {
-    for (i = 0; i < hist.length; i++) {
-        tempBoard = hist[i]["board"];
-        for (row = 0; row < tempBoard.length; row++) {
-            tempBoard[row].reverse();
-            for (j = 0; j < tempBoard[row].length; j++) {
-                if (tempBoard[row][j].t == 1) tempBoard[row][j].c = reversed[tempBoard[row][j].c];
-            }
-        }
-        for (j = 0; j < hist[i]["queue"].length; j++) {
-            hist[i]["queue"][j] = reversed[hist[i]["queue"][j]];
-        }
+	for (i = 0; i < hist.length; i++) {
+		console.log(hist.length);
+		tempBoard = hist[i]['board'];
+		for (row = 0; row < tempBoard.length; row++) {
+			tempBoard[row].reverse();
+			for (j = 0; j < tempBoard[row].length; j++) {
+				if (tempBoard[row][j].t == 1) tempBoard[row][j].c = reversed[tempBoard[row][j].c];
+			}
+		}
+		for (j = 0; j < hist[i]['queue'].length; j++) {
+			hist[i]['queue'][j] = reversed[hist[i]['queue'][j]];
+		}
 
-        hist[i]["hold"] = reversed[hist[i]["hold"]];
-        hist[i]["piece"] = reversed[hist[i]["piece"]];
-    }
-    board = JSON.parse(JSON.stringify(hist[histPos]['board']));
-    xPOS = spawn[0];
+		hist[i]['hold'] = reversed[hist[i]['hold']];
+		hist[i]['piece'] = reversed[hist[i]['piece']];
+	}
+	board = JSON.parse(JSON.stringify(hist[histPos]['board']));
+	xPOS = spawn[0];
 	yPOS = spawn[1];
 	rot = 0;
 	clearActive();
@@ -568,8 +561,9 @@ function updateHistory() {
 		hold: holdP,
 		piece: piece,
 	};
-    if (histPos > 1000) { // just in case hist is taking up too much memory
-        hist.splice(0, 100);
+	if (histPos > 1000) {
+		// just in case hist is taking up too much memory
+		hist.splice(0, 100);
 		histPos -= 100;
 	}
 	while (histPos < hist.length - 1) {
@@ -879,7 +873,7 @@ function callback() {
 	];
 	histPos = 0;
 	setInterval(() => {
-		if (!document.getElementById("grav").checked) move('SD');
+		if (!document.getElementById('grav').checked) move('SD');
 	}, 700);
 
 	function playSnd(sfx, overlap) {
