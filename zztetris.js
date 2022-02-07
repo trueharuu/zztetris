@@ -599,7 +599,6 @@ function mirror() {
 
 function fullMirror() {
 	for (i = 0; i < hist.length; i++) {
-		console.log(hist.length);
 		tempBoard = hist[i]['board'];
 		for (row = 0; row < tempBoard.length; row++) {
 			tempBoard[row].reverse();
@@ -617,7 +616,8 @@ function fullMirror() {
 	board = JSON.parse(JSON.stringify(hist[histPos]['board']));
 	xPOS = spawn[0];
 	yPOS = spawn[1];
-	rot = 0;
+    rot = 0;
+    updateQueue();
 	clearActive();
 	updateGhost();
 	setShape();
