@@ -238,14 +238,16 @@ document.onmouseup = function mouseup() {
 
 	if (drawMode) {
 		// compare board with hist[histPos]['board'] and attempt to autocolor
-		drawn = [];
+        drawn = [];
+        erased = [];
 		oldBoard = hist[histPos]['board'];
 		board.map((r, i) => {
 			r.map((c, ii) => {
-				if (c.c == 'X' && oldBoard[i][ii].c != 'X') drawn.push({ y: i, x: ii });
+                if (c.t == 1 && c.c != oldBoard[i][ii].c) drawn.push({ y: i, x: ii });
+                if (c.t == 0 && 0 != oldBoard[i][ii].t) erased.push({ y: i, x: ii });
 			});
 		});
-		if (drawn.length == 4 && paintbucketColor() == 'X') {
+		if (drawn.length == 4 && document.getElementById("autocolor").checked) {
 			// try to determine which tetramino was drawn
 			// first entry should be the topleft one
 
@@ -280,7 +282,7 @@ document.onmouseup = function mouseup() {
 				});
 			});
 		}
-		if (drawn.length != 0) {
+		if (drawn.length != 0 || erased.length != 0) {
 			updateHistory();
 		}
 	}
@@ -940,7 +942,7 @@ function callback() {
 	];
 	histPos = 0;
 	setInterval(() => {
-		if (!document.getElementById('grav').checked) move('SD');
+		if (document.getElementById('grav').checked) move('SD');
 	}, 700);
 
 	function playSnd(sfx, overlap) {
