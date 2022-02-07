@@ -400,21 +400,49 @@ async function importImage() {
 					console.log(this.width, this.height);
 					scale = this.width / 10.0;
 					x = 10;
-					y = Math.min(Math.round(this.height / scale), 20);
+					y = Math.min(Math.round(this.height / scale), 22);
 					console.log(x, y);
-					mycanvas.width = x;
-					mycanvas.height = y;
+					mycanvas.width = this.width;
+					mycanvas.height = this.height;
 
 					// Draw the image
-					ctx.drawImage(img, 0, 0, x, y);
-					var data = Object.values(ctx.getImageData(0, 0, x, y).data);
-					var nDat = [];
-					for (let i = 0; i < data.length / 4; i++) {
+					ctx.drawImage(img, 0, 0, this.width, this.height);
+					var data = Object.values(ctx.getImageData(0, 0, this.width, this.height).data);
+                    var nDat = [];
+                    for (row = 0; row < y; row++) {
+                        for (col = 0; col < 10; col++) {
+                            // get median value of pixels that should correspond to [row col] mino
+
+                            minoPixelsR = []
+                            minoPixelsG = []
+                            minoPixelsB = []
+                            
+                            for (pixelRow = Math.floor(row * scale); pixelRow < row * scale + scale; pixelRow++) {
+                                for (pixelCol = Math.floor(col * scale); pixelCol < col * scale + scale; pixelCol++) {
+                                    index = (pixelRow * this.width + pixelCol) * 4
+                                    minoPixelsR.push(data[index]);
+                                    minoPixelsG.push(data[index + 1]);
+                                    minoPixelsB.push(data[index + 2]);
+                                }
+                            }
+                            
+                            medianR = median(minoPixelsR);
+                            medianG = median(minoPixelsG);
+                            medianB = median(minoPixelsB);
+                            var hsv = rgb2hsv(medianR, medianG, medianB);
+                            //console.log(hsv, nearestColor(hsv[0], hsv[1], hsv[2]));
+                            nDat.push(nearestColor(hsv[0], hsv[1], hsv[2]));
+
+                            
+                        }
+                    }
+                    /* // old alg from just scaling it down to x by y pixels
+                    for (let i = 0; i < data.length / 4; i++) {
 						//nDat.push(data[i*4] + data[(i*4)+1] + data[(i*4)+2] < 382?1:0)
 						var hsv = rgb2hsv(data[i * 4], data[i * 4 + 1], data[i * 4 + 2]);
 						console.log(hsv, nearestColor(hsv[0], hsv[1], hsv[2])); // debugging purposes
 						nDat.push(nearestColor(hsv[0], hsv[1], hsv[2]));
-					}
+					}*/
 
 					tempBoard = new Array(40 - y).fill(new Array(10).fill({ t: 0, c: '' })); // empty top [40-y] rows
 					for (rowIndex = 0; rowIndex < y; rowIndex++) {
@@ -475,6 +503,21 @@ function nearestColor(h, s, v) {
 function inRange(x, min, max) {
 	return x >= min && x <= max;
 }
+
+function median(values){
+    if(values.length ===0) throw new Error("No inputs");
+  
+    values.sort(function(a,b){
+      return a-b;
+    });
+  
+    var half = Math.floor(values.length / 2);
+    
+    if (values.length % 2)
+      return values[half];
+    
+    return (values[half - 1] + values[half]) / 2.0;
+  }
 
 async function importFumen() {
 	fumen = await navigator.clipboard.readText();
