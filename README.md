@@ -9,8 +9,8 @@ inspired by fio's four-tris
 ---
 
 Fumen import/export / image import works through your clipboard.  
-Undo/redo is a thing.  
-Queue is a global variable so you can edit it in console i g  
+Undo/redo is a thing. It keeps track of your board state history.
+*Full* fumen import/export sets your board state history as the fumen pages and vice versa.
 Drawing on the board is a thing.
 
 ---
@@ -31,6 +31,8 @@ gravity toggle added
 full fumen import/export (fumen pages to zztetris hist boards)
 tetrio board encoding import/export
 mirroring / full hist mirroring
+autocoloring toggle
+queue editing prompt
 
 
 To Do:

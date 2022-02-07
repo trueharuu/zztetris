@@ -89,7 +89,8 @@ if (ctrlsDat && LS.version == '2021-10-12a') {
 	// No config found or outdated version, make new
 	var idk = Object.keys(ctrl);
 	idk.push('160', '30', '15', '20');
-	LS.config = JSON.stringify(idk);
+    LS.config = JSON.stringify(idk);
+    aboutPopup();
 }
 
 const notf = $('#notif');
@@ -530,7 +531,7 @@ function inRange(x, min, max) {
 	return x >= min && x <= max;
 }
 
-function median(values){
+function median(values){ // if this is too computationally expensive maybe switch to mean
     if(values.length ===0) throw new Error("No inputs");
   
     values.sort(function(a,b){
@@ -620,6 +621,20 @@ function fullMirror() {
 	clearActive();
 	updateGhost();
 	setShape();
+}
+
+function aboutPopup() {
+    window.alert(`zztetris
+a tetris client with a name that starts with zz so you can type zz and have it autocomplete
+forked from aznguy's schoolteto, a number of features added
+inspired by fio's four-tris
+---
+Start by adjusting your settings and keybinds in Game Settings
+
+Fumen import/export / image import works through your clipboard.  
+Undo/redo is a thing. It keeps track of your board state history.
+*Full* fumen import/export sets your board state history as the fumen pages and vice versa.
+Drawing on the board is a thing.`);
 }
 
 function updateHistory() {
