@@ -374,7 +374,7 @@ async function importTetrio() {
 
 function exportTetrio() {
 	convert = {
-		G: '#',
+		X: '#',
 		Z: 'z',
 		S: 's',
 		L: 'l',
