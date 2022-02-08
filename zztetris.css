@@ -70,10 +70,14 @@ label > input[class='paintbucket'] + *::before {
 	border-width: 0.2rem;
     filter: brightness(50%);
 }
-label > input[class='paintbucket']:checked + *::before {
-	border-color: whitesmoke;
-    filter: brightness(150%);
 
+label > input[class='paintbucket']:hover + *::before {
+	border-color: white;
+}
+
+label > input[class='paintbucket']:checked + *::before {
+	border-color: white;
+    filter: brightness(150%);
 }
 
 label > input[id='X'] + *::before {

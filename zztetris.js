@@ -89,8 +89,8 @@ if (ctrlsDat && LS.version == '2021-10-12a') {
 	// No config found or outdated version, make new
 	var idk = Object.keys(ctrl);
 	idk.push('160', '30', '15', '20');
-    LS.config = JSON.stringify(idk);
-    aboutPopup();
+	LS.config = JSON.stringify(idk);
+	aboutPopup();
 }
 
 const notf = $('#notif');
@@ -239,16 +239,16 @@ document.onmouseup = function mouseup() {
 
 	if (drawMode) {
 		// compare board with hist[histPos]['board'] and attempt to autocolor
-        drawn = [];
-        erased = [];
+		drawn = [];
+		erased = [];
 		oldBoard = hist[histPos]['board'];
 		board.map((r, i) => {
 			r.map((c, ii) => {
-                if (c.t == 1 && c.c != oldBoard[i][ii].c) drawn.push({ y: i, x: ii });
-                if (c.t == 0 && 0 != oldBoard[i][ii].t) erased.push({ y: i, x: ii });
+				if (c.t == 1 && c.c != oldBoard[i][ii].c) drawn.push({ y: i, x: ii });
+				if (c.t == 0 && 0 != oldBoard[i][ii].t) erased.push({ y: i, x: ii });
 			});
 		});
-		if (drawn.length == 4 && document.getElementById("autocolor").checked) {
+		if (drawn.length == 4 && document.getElementById('autocolor').checked) {
 			// try to determine which tetramino was drawn
 			// first entry should be the topleft one
 
@@ -297,28 +297,35 @@ function paintbucketColor() {
 	}
 }
 
-document.getElementById('n').addEventListener('click', event => {
-    let QueueInput = prompt("Queue", queue.join('')).toUpperCase();
-    // ok there's probably a regex way to do this but...
-    temp = [];
-    for (i = 0; i < QueueInput.length; i++) { //sanitization
-        if ("SZLJIOT".includes(QueueInput[i])) temp.push(QueueInput[i]);
-    }
+document.getElementById('n').addEventListener('click', (event) => {
+	let QueueInput = prompt('Queue', piece + queue.join('')).toUpperCase();
+	// ok there's probably a regex way to do this but...
+	temp = [];
+	for (i = 0; i < QueueInput.length; i++) {
+		//sanitization
+		if ('SZLJIOT'.includes(QueueInput[i])) temp.push(QueueInput[i]);
+	}
     if (temp.length > 0) {
         temp.push('|'); // could probably insert one every 7 pieces but am too lazy
-        queue = temp;
-        updateQueue();
-    }
+        piece = temp.shift();
+		queue = temp;
+		updateQueue();
+	}
 });
 
-document.getElementById('h').addEventListener('click', event => {
-    let HoldInput = prompt("Hold", holdP).toUpperCase();
-    HoldInput = HoldInput[0]; // make sure it's just 1 character
-    //sanitization
-    if ("SZLJIOT".includes(HoldInput)) {
-        holdP = HoldInput;
+document.getElementById('h').addEventListener('click', (event) => {
+    let HoldInput = prompt('Hold', holdP).toUpperCase();
+    if (HoldInput.length == 0) {
+        holdP = "";
         updateQueue();
+        return;
     }
+	HoldInput = HoldInput[0]; // make sure it's just 1 character
+	//sanitization
+	if ('SZLJIOT'.includes(HoldInput)) {
+		holdP = HoldInput;
+		updateQueue();
+	}
 });
 
 // import/export stuff
@@ -435,35 +442,33 @@ async function importImage() {
 					// Draw the image
 					ctx.drawImage(img, 0, 0, this.width, this.height);
 					var data = Object.values(ctx.getImageData(0, 0, this.width, this.height).data);
-                    var nDat = [];
-                    for (row = 0; row < y; row++) {
-                        for (col = 0; col < 10; col++) {
-                            // get median value of pixels that should correspond to [row col] mino
+					var nDat = [];
+					for (row = 0; row < y; row++) {
+						for (col = 0; col < 10; col++) {
+							// get median value of pixels that should correspond to [row col] mino
 
-                            minoPixelsR = []
-                            minoPixelsG = []
-                            minoPixelsB = []
-                            
-                            for (pixelRow = Math.floor(row * scale); pixelRow < row * scale + scale; pixelRow++) {
-                                for (pixelCol = Math.floor(col * scale); pixelCol < col * scale + scale; pixelCol++) {
-                                    index = (pixelRow * this.width + pixelCol) * 4
-                                    minoPixelsR.push(data[index]);
-                                    minoPixelsG.push(data[index + 1]);
-                                    minoPixelsB.push(data[index + 2]);
-                                }
-                            }
-                            
-                            medianR = median(minoPixelsR);
-                            medianG = median(minoPixelsG);
-                            medianB = median(minoPixelsB);
-                            var hsv = rgb2hsv(medianR, medianG, medianB);
-                            console.log(hsv, nearestColor(hsv[0], hsv[1], hsv[2])); // debugging purposes
-                            nDat.push(nearestColor(hsv[0], hsv[1], hsv[2]));
+							minoPixelsR = [];
+							minoPixelsG = [];
+							minoPixelsB = [];
 
-                            
-                        }
-                    }
-                    /* // old alg from just scaling it down to x by y pixels
+							for (pixelRow = Math.floor(row * scale); pixelRow < row * scale + scale; pixelRow++) {
+								for (pixelCol = Math.floor(col * scale); pixelCol < col * scale + scale; pixelCol++) {
+									index = (pixelRow * this.width + pixelCol) * 4;
+									minoPixelsR.push(data[index]);
+									minoPixelsG.push(data[index + 1]);
+									minoPixelsB.push(data[index + 2]);
+								}
+							}
+
+							medianR = median(minoPixelsR);
+							medianG = median(minoPixelsG);
+							medianB = median(minoPixelsB);
+							var hsv = rgb2hsv(medianR, medianG, medianB);
+							console.log(hsv, nearestColor(hsv[0], hsv[1], hsv[2])); // debugging purposes
+							nDat.push(nearestColor(hsv[0], hsv[1], hsv[2]));
+						}
+					}
+					/* // old alg from just scaling it down to x by y pixels
                     for (let i = 0; i < data.length / 4; i++) {
 						//nDat.push(data[i*4] + data[(i*4)+1] + data[(i*4)+2] < 382?1:0)
 						var hsv = rgb2hsv(data[i * 4], data[i * 4 + 1], data[i * 4 + 2]);
@@ -531,20 +536,20 @@ function inRange(x, min, max) {
 	return x >= min && x <= max;
 }
 
-function median(values){ // if this is too computationally expensive maybe switch to mean
-    if(values.length ===0) throw new Error("No inputs");
-  
-    values.sort(function(a,b){
-      return a-b;
-    });
-  
-    var half = Math.floor(values.length / 2);
-    
-    if (values.length % 2)
-      return values[half];
-    
-    return (values[half - 1] + values[half]) / 2.0;
-  }
+function median(values) {
+	// if this is too computationally expensive maybe switch to mean
+	if (values.length === 0) throw new Error('No inputs');
+
+	values.sort(function (a, b) {
+		return a - b;
+	});
+
+	var half = Math.floor(values.length / 2);
+
+	if (values.length % 2) return values[half];
+
+	return (values[half - 1] + values[half]) / 2.0;
+}
 
 async function importFumen() {
 	fumen = await navigator.clipboard.readText();
@@ -616,15 +621,15 @@ function fullMirror() {
 	board = JSON.parse(JSON.stringify(hist[histPos]['board']));
 	xPOS = spawn[0];
 	yPOS = spawn[1];
-    rot = 0;
-    updateQueue();
+	rot = 0;
+	updateQueue();
 	clearActive();
 	updateGhost();
 	setShape();
 }
 
 function aboutPopup() {
-    window.alert(`zztetris
+	window.alert(`zztetris
 a tetris client with a name that starts with zz so you can type zz and have it autocomplete
 forked from aznguy's schoolteto, a number of features added
 inspired by fio's four-tris
