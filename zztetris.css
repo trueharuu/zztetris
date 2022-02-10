@@ -38,21 +38,12 @@ body {
 	transition-duration: 0.4s;
 	cursor: pointer;
 }
+
 .button:hover {
-	display: block;
 	background-color: #4caf50; /* Green */
-	border: 2px solid white;
-	color: white;
-	font-family: SLANT;
-	text-align: center;
-	text-decoration: none;
-	display: inline-block;
-	font-size: 12px;
-	letter-spacing: 2px;
-	margin: 6px 2px;
-	transition-duration: 0.4s;
-	cursor: pointer;
+	margin: 4px 2px;
 }
+
 input[type='radio'] {
 	display: none;
 }
