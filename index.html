@@ -8,6 +8,8 @@
 	<link rel="icon" href="./pieceSprite/z.png" />
 	<link rel="stylesheet" type="text/css" href="zztetris.css" />
 	<link rel="stylesheet" type="text/css" href="styles/paint_bucket.css" />
+	<link rel="stylesheet" type="text/css" href="styles/import_export.css" />
+	<link rel="stylesheet" type="text/css" href="styles/board_settings.css" />
 	<head>
 		<meta charset="UTF-8" />
 		<meta property="og:type" content="website" />
@@ -27,13 +29,20 @@
 
 		<div style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); display: flex">
 			<div class="import-export">
-				<button class="button" onclick="this.blur(); exportFumen()">Export Fumen</button>
-				<button class="button" onclick="this.blur(); importFumen()">Import Fumen</button>
-				<button class="button" onclick="this.blur(); exportFullFumen()">Export Full Fumen</button>
-				<button class="button" onclick="this.blur(); importFullFumen()">Import Full Fumen</button>
-				<button class="button" onclick="this.blur(); exportTetrio()">Export TETRIO</button>
-				<button class="button" onclick="this.blur(); importTetrio()">Import TETRIO</button>
-				<button class="button" onclick="this.blur(); importImage()">Import Image</button>
+				<div class="exports">
+					<h3>Export To</h3>
+					<button class="button" onclick="this.blur(); exportFumen()">Fumen</button>
+					<button class="button" onclick="this.blur(); exportFullFumen()">Full Fumen</button>
+					<button class="button" onclick="this.blur(); exportTetrio()">TETRIO</button>
+				</div>
+
+				<div class="imports">
+					<h3>Import From</h3>
+					<button class="button" onclick="this.blur(); importFumen()"> Fumen</button>
+					<button class="button" onclick="this.blur(); importFullFumen()">Full Fumen</button>
+					<button class="button" onclick="this.blur(); importTetrio()">TETRIO</button>
+					<button class="button" onclick="this.blur(); importImage()">Image</button>
+				</div>
 			</div>
 
 			<div class="queue">
@@ -52,8 +61,8 @@
 			</div>
 
 			<div class="board-settings">
-				<button class="button" onclick="this.blur(); shuffleQueue();">Shuffle Queue</button>
-				<button class="button" onclick="this.blur(); shuffleQueuePlusHold();">Shuffle Queue + Hold</button>
+				<button class="button button--shuffle" onclick="this.blur(); shuffleQueue();">Queue</button>
+				<button class="button button--shuffle" onclick="this.blur(); shuffleQueuePlusHold();">Queue + Hold</button>
 
 				<button class="button" onclick="this.blur(); mirror()">Mirror</button>
 				<button class="button" onclick="this.blur(); fullMirror()">Full Mirror</button>
