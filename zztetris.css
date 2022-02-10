@@ -47,3 +47,7 @@ body {
 input[type='radio'] {
 	display: none;
 }
+
+footer {
+	width: 100%;
+}

@@ -5,6 +5,8 @@
     width: 8rem;
     padding: 2px;
     justify-content: space-between;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .paint-bucket input[class='paintbucket'] + *::before {
