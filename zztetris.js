@@ -245,7 +245,7 @@ document.onmouseup = function mouseup() {
 		board.map((r, i) => {
 			r.map((c, ii) => {
 				if (c.t == 1 && c.c != oldBoard[i][ii].c) drawn.push({ y: i, x: ii });
-				if (c.t == 0 && 0 != oldBoard[i][ii].t) erased.push({ y: i, x: ii });
+				if (c.t == 0 && 1 == oldBoard[i][ii].t) erased.push({ y: i, x: ii });
 			});
 		});
 		if (drawn.length == 4 && document.getElementById('autocolor').checked) {
@@ -283,9 +283,7 @@ document.onmouseup = function mouseup() {
 				});
 			});
 		}
-		if (drawn.length != 0 || erased.length != 0) {
-			updateHistory();
-		}
+		if (drawn.length != 0 || erased.length != 0) updateHistory();
 	}
 };
 
@@ -305,21 +303,21 @@ document.getElementById('n').addEventListener('click', (event) => {
 		//sanitization
 		if ('SZLJIOT'.includes(QueueInput[i])) temp.push(QueueInput[i]);
 	}
-    if (temp.length > 0) {
-        temp.push('|'); // could probably insert one every 7 pieces but am too lazy
-        piece = temp.shift();
+	if (temp.length > 0) {
+		temp.push('|'); // could probably insert one every 7 pieces but am too lazy
+		piece = temp.shift();
 		queue = temp;
 		updateQueue();
 	}
 });
 
 document.getElementById('h').addEventListener('click', (event) => {
-    let HoldInput = prompt('Hold', holdP).toUpperCase();
-    if (HoldInput.length == 0) {
-        holdP = "";
-        updateQueue();
-        return;
-    }
+	let HoldInput = prompt('Hold', holdP).toUpperCase();
+	if (HoldInput.length == 0) {
+		holdP = '';
+		updateQueue();
+		return;
+	}
 	HoldInput = HoldInput[0]; // make sure it's just 1 character
 	//sanitization
 	if ('SZLJIOT'.includes(HoldInput)) {
@@ -629,14 +627,13 @@ function fullMirror() {
 }
 
 function aboutPopup() {
-	window.alert(`zztetris
+	window.alert(`START BY ADJUSTING KEYBINDS AND SETTINGS
+zztetris
 a tetris client with a name that starts with zz so you can type zz and have it autocomplete
 forked from aznguy's schoolteto, a number of features added
 inspired by fio's four-tris
 ---
-Start by adjusting your settings and keybinds in Game Settings
-
-Fumen import/export / image import works through your clipboard.  
+Import/Export works through your clipboard.  
 Undo/redo is a thing. It keeps track of your board state history.
 *Full* fumen import/export sets your board state history as the fumen pages and vice versa.
 Drawing on the board is a thing.`);
@@ -650,7 +647,7 @@ function updateHistory() {
 		hold: holdP,
 		piece: piece,
 	};
-	if (histPos > 1000) {
+	if (histPos > 500) {
 		// just in case hist is taking up too much memory
 		hist.splice(0, 100);
 		histPos -= 100;
@@ -800,6 +797,20 @@ function redo() {
 }
 
 function restart() {
+	if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) {
+		// lazy check, will have false positives, but whatever
+		if (queue[6] == '|' && holdP == '') { // if they reset after resetting, just restart hist
+			hist = [
+				{
+					board: JSON.parse(JSON.stringify(board)),
+					queue: JSON.parse(JSON.stringify(queue)),
+					hold: holdP,
+					piece: piece,
+				},
+			];
+			histPos = 0;
+		}
+	}
 	board = [];
 	for (let i = 0; i < boardSize[1]; i++) {
 		board.push(aRow());
@@ -946,6 +957,7 @@ function callback() {
 			if (input == 'SD') sdID++;
 			if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
 				dasID++;
+				dasID %= 1000;
 				charged = false;
 			}
 		}
@@ -1084,6 +1096,7 @@ function callback() {
 			shiftDir = -1;
 
 			dasID++;
+			dasID %= 1000;
 			das('L', dasID);
 		}
 		if (keysDown & flags.R && !(lastKeys & flags.R)) {
@@ -1093,6 +1106,7 @@ function callback() {
 			shiftDir = 1;
 
 			dasID++;
+			dasID %= 1000;
 			das('R', dasID);
 		}
 
@@ -1101,11 +1115,13 @@ function callback() {
 			shiftDir = -1;
 
 			dasID++;
+			dasID %= 1000;
 			das('L', dasID);
 		} else if (!(keysDown & flags.L) && lastKeys & flags.L && keysDown & flags.R) {
 			shiftDir = 1;
 
 			dasID++;
+			dasID %= 1000;
 			das('R', dasID);
 		} else if ((!(keysDown & flags.L) && lastKeys & flags.L) || (!(keysDown & flags.R) && lastKeys & flags.R)) {
 			shiftDelay = 0;
@@ -1114,9 +1130,11 @@ function callback() {
 			shiftDir = 0;
 
 			dasID++;
+			dasID %= 1000;
 			//charged = false;
 		} else if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
 			dasID++;
+			dasID %= 1000;
 			charged = false;
 		}
 
@@ -1222,7 +1240,7 @@ function callback() {
 			if (tspin) {
 				filledFacingCorners = 0;
 				facingCorners.forEach((corner) => {
-					if (corner[0] >= 40 || corner[1] < 0 || corner[1] >= 10) FilledFacingCorners++;
+					if (corner[0] >= 40 || corner[1] < 0 || corner[1] >= 10) filledFacingCorners++;
 					else if (board[corner[0]][corner[1]]['t'] == 1) filledFacingCorners++;
 				});
 				mini = filledFacingCorners < 2; // no I'm not adding the "TST Kick and Fin Kick" exceptions. STSDs and Fins deserve to be mini
