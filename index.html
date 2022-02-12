@@ -26,7 +26,6 @@
 		<title>ZZTetris</title>
 	</head>
 	<body style="background-color: #222; color: #fff">
-
 		<div style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); display: flex">
 			<div class="import-export">
 				<div class="exports">
@@ -38,7 +37,7 @@
 
 				<div class="imports">
 					<h3>Import From</h3>
-					<button class="button" onclick="this.blur(); importFumen()"> Fumen</button>
+					<button class="button" onclick="this.blur(); importFumen()">Fumen</button>
 					<button class="button" onclick="this.blur(); importFullFumen()">Full Fumen</button>
 					<button class="button" onclick="this.blur(); importTetrio()">TETRIO</button>
 					<button class="button" onclick="this.blur(); importImage()">Image</button>
@@ -46,7 +45,8 @@
 			</div>
 
 			<div class="queue">
-				HOLD<hr />
+				HOLD
+				<hr />
 				<canvas id="h" width="90" height="60"></canvas>
 				<div id="notif" style="width: 90px; text-align: center"></div>
 			</div>
@@ -56,14 +56,17 @@
 			</div>
 
 			<div class="queue">
-				NEXT<hr />
+				NEXT
+				<hr />
 				<canvas id="n" width="90" height="360"></canvas>
 			</div>
 
 			<div class="board-settings">
 				<h3>Options</h3>
 				<button class="button button--shuffle" onclick="this.blur(); shuffleQueue();">Queue</button>
-				<button class="button button--shuffle" onclick="this.blur(); shuffleQueuePlusHold();">Queue + Hold</button>
+				<button class="button button--shuffle" onclick="this.blur(); shuffleQueuePlusHold();">
+					Queue + Hold
+				</button>
 
 				<button class="button" onclick="this.blur(); mirror()">Mirror</button>
 				<button class="button" onclick="this.blur(); fullMirror()">Full Mirror</button>
@@ -102,12 +105,20 @@
 						<span></span>
 					</label>
 				</form>
-				<div>
-					<input type="checkbox" checked id="autocolor"> <label for="autocolor">autocolor</label>
-				</div>
-				<div>
-					<input type="checkbox" checked id="grav"> <label for="grav">gravity</label>
-				</div>
+				<div><input type="checkbox" checked id="autocolor" /> <label for="autocolor">autocolor</label></div>
+				<div><input type="checkbox" checked id="grav" /> <label for="grav">gravity</label></div>
+				<p></p>
+				<form>
+					<label for="kickset">Kickset:</label>
+					<select name="kickset" id="kickset">
+						<option value="SRS+">SRS+</option>
+						<option value="SRS">SRS</option>
+						<option value="SRS-X">SRS-X</option>
+						<option value="ASC">ASC</option>
+                        <option value="none">none</option>
+					</select>
+				</form>
+				<button class="button" onclick="this.blur(); updateKickTable()">Submit</button>
 			</div>
 		</div>
 

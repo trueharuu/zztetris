@@ -241,7 +241,7 @@ document.onmouseup = function mouseup() {
 		// compare board with hist[histPos]['board'] and attempt to autocolor
 		drawn = [];
 		erased = [];
-		oldBoard = hist[histPos]['board'];
+		oldBoard = JSON.parse(hist[histPos]['board']);
 		board.map((r, i) => {
 			r.map((c, ii) => {
 				if (c.t == 1 && c.c != oldBoard[i][ii].c) drawn.push({ y: i, x: ii });
@@ -304,10 +304,9 @@ document.getElementById('n').addEventListener('click', (event) => {
 		if ('SZLJIOT'.includes(QueueInput[i])) temp.push(QueueInput[i]);
 	}
 	if (temp.length > 0) {
-		temp.push('|'); // could probably insert one every 7 pieces but am too lazy
-		piece = temp.shift();
-		queue = temp;
-		updateQueue();
+        temp.push('|'); // could probably insert one every 7 pieces but am too lazy
+        queue = temp;
+        newPiece();
 	}
 });
 
@@ -568,7 +567,7 @@ async function importFullFumen() {
 	result = fullDecode(fumen, hist[histPos]); // let's import boards but just keep current queue/hold/piece in each frame
 	hist = JSON.parse(JSON.stringify(result));
 	histPos = 0;
-	board = JSON.parse(JSON.stringify(hist[0]['board']));
+	board = JSON.parse(hist[0]['board']);
 	xPOS = spawn[0];
 	yPOS = spawn[1];
 	rot = 0;
@@ -602,21 +601,26 @@ function mirror() {
 
 function fullMirror() {
 	for (i = 0; i < hist.length; i++) {
-		tempBoard = hist[i]['board'];
+		tempBoard = JSON.parse(hist[i]['board']);
 		for (row = 0; row < tempBoard.length; row++) {
 			tempBoard[row].reverse();
 			for (j = 0; j < tempBoard[row].length; j++) {
 				if (tempBoard[row][j].t == 1) tempBoard[row][j].c = reversed[tempBoard[row][j].c];
 			}
-		}
-		for (j = 0; j < hist[i]['queue'].length; j++) {
-			hist[i]['queue'][j] = reversed[hist[i]['queue'][j]];
-		}
+        }
+        hist[i]['board'] = JSON.stringify(tempBoard);
+        tempQueue = JSON.parse(hist[i]['queue']);
+		for (j = 0; j < tempQueue.length; j++) {
+			tempQueue[j] = reversed[tempQueue[j]];
+        }
+        hist[i]['queue'] = JSON.stringify(tempQueue);
 
 		hist[i]['hold'] = reversed[hist[i]['hold']];
 		hist[i]['piece'] = reversed[hist[i]['piece']];
 	}
-	board = JSON.parse(JSON.stringify(hist[histPos]['board']));
+    board = tempBoard;
+    queue = tempQueue;
+    holdP = reversed[holdP];
 	xPOS = spawn[0];
 	yPOS = spawn[1];
 	rot = 0;
@@ -642,8 +646,8 @@ Drawing on the board is a thing.`);
 function updateHistory() {
 	histPos++;
 	hist[histPos] = {
-		board: JSON.parse(JSON.stringify(board)),
-		queue: JSON.parse(JSON.stringify(queue)),
+		board: JSON.stringify(board),
+		queue: JSON.stringify(queue),
 		hold: holdP,
 		piece: piece,
 	};
@@ -686,7 +690,7 @@ function checkTopOut() {
 	for (r = 0; r < p.length; r++) {
 		for (c = 0; c < p[0].length; c++) {
 			if (p[r][c] != 0) {
-				if (board[r + yPOS][c + xPOS].t != 0) {
+				if (board[r + yPOS][c + xPOS].t == 1) {
 					notify('TOP OUT');
 				}
 			}
@@ -763,8 +767,8 @@ function notify(text) {
 function undo() {
 	if (histPos > 0) {
 		histPos--;
-		board = JSON.parse(JSON.stringify(hist[histPos]['board']));
-		queue = JSON.parse(JSON.stringify(hist[histPos]['queue']));
+		board = JSON.parse(hist[histPos]['board']);
+		queue = JSON.parse(hist[histPos]['queue']);
 		holdP = hist[histPos]['hold'];
 		piece = hist[histPos]['piece'];
 
@@ -780,8 +784,8 @@ function undo() {
 
 function redo() {
 	if (histPos < hist.length - 1) {
-		board = JSON.parse(JSON.stringify(hist[histPos + 1]['board']));
-		queue = JSON.parse(JSON.stringify(hist[histPos + 1]['queue']));
+		board = JSON.parse(hist[histPos + 1]['board']);
+		queue = JSON.parse(hist[histPos + 1]['queue']);
 		holdP = hist[histPos + 1]['hold'];
 		piece = hist[histPos + 1]['piece'];
 		histPos++;
@@ -802,8 +806,8 @@ function restart() {
 		if (queue[6] == '|' && holdP == '') { // if they reset after resetting, just restart hist
 			hist = [
 				{
-					board: JSON.parse(JSON.stringify(board)),
-					queue: JSON.parse(JSON.stringify(queue)),
+					board: JSON.stringify(board),
+					queue: JSON.stringify(queue),
 					hold: holdP,
 					piece: piece,
 				},
@@ -903,9 +907,14 @@ function shuffleQueuePlusHold() {
 	updateHistory();
 }
 
+function updateKickTable() {
+    kicks = kicksets[document.getElementById("kickset").value];
+}
+
 function callback() {
-	pieces = SRSX.pieces;
-	kicks = SRSX.kicks;
+	// pieces = SRSX.pieces;
+	// kicks = SRSX.kicks;
+    kicks = kicksets["SRS+"];
 
 	keysDown = 0;
 	lastKeys = 0;
@@ -957,7 +966,6 @@ function callback() {
 			if (input == 'SD') sdID++;
 			if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
 				dasID++;
-				dasID %= 1000;
 				charged = false;
 			}
 		}
@@ -966,8 +974,8 @@ function callback() {
 	newPiece();
 	hist = [
 		{
-			board: JSON.parse(JSON.stringify(board)),
-			queue: JSON.parse(JSON.stringify(queue)),
+			board: JSON.stringify(board),
+			queue: JSON.stringify(queue),
 			hold: holdP,
 			piece: piece,
 		},
@@ -1096,7 +1104,6 @@ function callback() {
 			shiftDir = -1;
 
 			dasID++;
-			dasID %= 1000;
 			das('L', dasID);
 		}
 		if (keysDown & flags.R && !(lastKeys & flags.R)) {
@@ -1106,7 +1113,6 @@ function callback() {
 			shiftDir = 1;
 
 			dasID++;
-			dasID %= 1000;
 			das('R', dasID);
 		}
 
@@ -1115,13 +1121,11 @@ function callback() {
 			shiftDir = -1;
 
 			dasID++;
-			dasID %= 1000;
 			das('L', dasID);
 		} else if (!(keysDown & flags.L) && lastKeys & flags.L && keysDown & flags.R) {
 			shiftDir = 1;
 
 			dasID++;
-			dasID %= 1000;
 			das('R', dasID);
 		} else if ((!(keysDown & flags.L) && lastKeys & flags.L) || (!(keysDown & flags.R) && lastKeys & flags.R)) {
 			shiftDelay = 0;
@@ -1130,11 +1134,9 @@ function callback() {
 			shiftDir = 0;
 
 			dasID++;
-			dasID %= 1000;
 			//charged = false;
 		} else if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
 			dasID++;
-			dasID %= 1000;
 			charged = false;
 		}
 
