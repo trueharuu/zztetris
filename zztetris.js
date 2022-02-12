@@ -221,7 +221,7 @@ document.getElementById('b').onmousedown = function mousedown(e) {
 	if (inRange(mouseX, 0, 9) && inRange(mouseY, 0, 21)) {
 		if (!mouseDown) {
 			movingCoordinates = false;
-			drawMode = board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]['t'] == 1;
+			drawMode = e.button != 0 || board[boardSize[1] + mouseY - hiddenRows - 2][mouseX]['t'] == 1;
 			if (drawMode) {
 				board[boardSize[1] + mouseY - hiddenRows - 2][mouseX] = { t: 0, c: '' };
 			} else {
