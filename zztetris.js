@@ -304,9 +304,9 @@ document.getElementById('n').addEventListener('click', (event) => {
 		if ('SZLJIOT'.includes(QueueInput[i])) temp.push(QueueInput[i]);
 	}
 	if (temp.length > 0) {
-        temp.push('|'); // could probably insert one every 7 pieces but am too lazy
-        queue = temp;
-        newPiece();
+		temp.push('|'); // could probably insert one every 7 pieces but am too lazy
+		queue = temp;
+		newPiece();
 	}
 });
 
@@ -328,7 +328,11 @@ document.getElementById('h').addEventListener('click', (event) => {
 // import/export stuff
 
 async function importTetrio() {
-	temp = await navigator.clipboard.readText();
+	try {
+		temp = await navigator.clipboard.readText();
+	} catch (error) {
+		temp = prompt('tetrio map');
+	}
 	convert = {
 		'#': 'G',
 		z: 'Z',
@@ -395,20 +399,25 @@ function exportTetrio() {
 	if (holdP) result += '?' + convert[holdP];
 
 	console.log(result);
-	navigator.clipboard.writeText(result);
+	try {
+		navigator.clipboard.writeText(result);
+	} catch (error) {
+		window.alert(result);
+	}
 }
 
 function exportFumen() {
 	fumen = encode(board);
 	console.log(fumen);
 	navigator.clipboard.writeText(fumen);
-	// window.open('https://harddrop.com/fumen/?' + fumen, '_blank');
+	window.open('https://harddrop.com/fumen/?' + fumen, '_blank');
 }
 
 function exportFullFumen() {
 	fumen = fullEncode(hist);
 	console.log(fumen);
-	navigator.clipboard.writeText(fumen);
+    navigator.clipboard.writeText(fumen);
+    window.open('https://harddrop.com/fumen/?' + fumen, '_blank');
 }
 
 async function importImage() {
@@ -549,7 +558,11 @@ function median(values) {
 }
 
 async function importFumen() {
-	fumen = await navigator.clipboard.readText();
+	try {
+		fumen = await navigator.clipboard.readText();
+	} catch (error) {
+		fumen = prompt('fumen encoding');
+	}
 	result = decode(fumen);
 	board = JSON.parse(JSON.stringify(result));
 
@@ -563,7 +576,11 @@ async function importFumen() {
 }
 
 async function importFullFumen() {
-	fumen = await navigator.clipboard.readText();
+	try {
+		fumen = await navigator.clipboard.readText();
+	} catch (error) {
+		fumen = prompt('fumen encoding');
+	}
 	result = fullDecode(fumen, hist[histPos]); // let's import boards but just keep current queue/hold/piece in each frame
 	hist = JSON.parse(JSON.stringify(result));
 	histPos = 0;
@@ -607,20 +624,20 @@ function fullMirror() {
 			for (j = 0; j < tempBoard[row].length; j++) {
 				if (tempBoard[row][j].t == 1) tempBoard[row][j].c = reversed[tempBoard[row][j].c];
 			}
-        }
-        hist[i]['board'] = JSON.stringify(tempBoard);
-        tempQueue = JSON.parse(hist[i]['queue']);
+		}
+		hist[i]['board'] = JSON.stringify(tempBoard);
+		tempQueue = JSON.parse(hist[i]['queue']);
 		for (j = 0; j < tempQueue.length; j++) {
 			tempQueue[j] = reversed[tempQueue[j]];
-        }
-        hist[i]['queue'] = JSON.stringify(tempQueue);
+		}
+		hist[i]['queue'] = JSON.stringify(tempQueue);
 
 		hist[i]['hold'] = reversed[hist[i]['hold']];
 		hist[i]['piece'] = reversed[hist[i]['piece']];
 	}
-    board = tempBoard;
-    queue = tempQueue;
-    holdP = reversed[holdP];
+	board = tempBoard;
+	queue = tempQueue;
+	holdP = reversed[holdP];
 	xPOS = spawn[0];
 	yPOS = spawn[1];
 	rot = 0;
@@ -803,7 +820,8 @@ function redo() {
 function restart() {
 	if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) {
 		// lazy check, will have false positives, but whatever
-		if (queue[6] == '|' && holdP == '') { // if they reset after resetting, just restart hist
+		if (queue[6] == '|' && holdP == '') {
+			// if they reset after resetting, just restart hist
 			hist = [
 				{
 					board: JSON.stringify(board),
@@ -908,13 +926,13 @@ function shuffleQueuePlusHold() {
 }
 
 function updateKickTable() {
-    kicks = kicksets[document.getElementById("kickset").value];
+	kicks = kicksets[document.getElementById('kickset').value];
 }
 
 function callback() {
 	// pieces = SRSX.pieces;
 	// kicks = SRSX.kicks;
-    kicks = kicksets["SRS+"];
+	kicks = kicksets['SRS+'];
 
 	keysDown = 0;
 	lastKeys = 0;
