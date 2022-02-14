@@ -33,6 +33,7 @@ tetrio board encoding import/export
 mirroring / full hist mirroring
 autocoloring toggle
 queue editing prompt
+adding garbage added
 
 
 To Do:

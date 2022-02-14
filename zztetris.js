@@ -647,6 +647,18 @@ function fullMirror() {
 	setShape();
 }
 
+function garbage(column, amount = 1) {
+    for (i = 0; i < amount; i++) {
+        garbageRow = new Array(10).fill({ t: 1, c: 'X' });
+        garbageRow[column] = { t: 0, c: '' };
+        board.shift();
+        board.push(garbageRow);
+    }
+    xPOS = spawn[0];
+	yPOS = spawn[1];
+    updateGhost();    
+}
+
 function aboutPopup() {
 	window.alert(`START BY ADJUSTING KEYBINDS AND SETTINGS
 zztetris

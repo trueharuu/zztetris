@@ -108,6 +108,22 @@
 				<div><input type="checkbox" checked id="autocolor" /> <label for="autocolor">autocolor</label></div>
 				<div><input type="checkbox" checked id="grav" /> <label for="grav">gravity</label></div>
 				<p></p>
+                <form>
+					<label for="garbageCol">Garbage:</label>
+					<select name="garbageCol" id="garbageCol">
+						<option value=0>0th col</option>
+						<option value=1>1th col</option>
+						<option value=2>2th col</option>
+						<option value=3>3th col</option>
+                        <option value=4>4th col</option>
+                        <option value=5>5th col</option>
+                        <option value=6>6th col</option>
+                        <option value=7>7th col</option>
+                        <option value=8>8th col</option>
+                        <option value=9>9th col</option>
+					</select>
+				</form>
+				<button class="button" onclick="this.blur(); garbage(document.getElementById('garbageCol').value);">Submit</button>
 				<form>
 					<label for="kickset">Kickset:</label>
 					<select name="kickset" id="kickset">
