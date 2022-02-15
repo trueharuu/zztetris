@@ -1006,7 +1006,10 @@ function restart() {
 	xPOS = spawn[0];
 	yPOS = spawn[1];
 	xGHO = spawn[0];
-	yGHO = spawn[1];
+    yGHO = spawn[1];
+    
+    combo = -1;
+    b2b = -1;
 	newPiece();
 }
 
@@ -1160,6 +1163,8 @@ function callback() {
 		},
 	];
     histPos = 0;
+    combo = -1;
+    b2b = -1;
     restart();
 	setInterval(() => {
 		if (document.getElementById('grav').checked) move('SD');
@@ -1444,14 +1449,27 @@ function callback() {
 			board.unshift(aRow());
 		}
 
-		if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) pc = true;
+        if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) pc = true;
+        
+        if (cleared == 0) combo = -1;
+        else {
+            combo += 1;
+        }
 
-		text = '';
+        if (cleared > 0) {
+            if (tspin) b2b += 1;
+            else b2b = -1;
+        }
+
+        text = '';
+        
+        if (combo > 0) text += combo.toString() + "_COMBO\n";
+        if (b2b > 0 && tspin) text += 'B2B ';
 		if (mini) text += 'MINI ';
 		if (tspin) text += 'T-SPIN ';
 		if (cleared > 4) cleared = 4; // nani
 		if (cleared > 0) text += ['NULL', 'SINGLE', 'DOUBLE', 'TRIPLE', 'QUAD'][cleared];
-		if (pc) text = 'PERFECT\nCLEAR!';
+		if (pc) text += '\nPERFECT\nCLEAR!';
 
 		if (text != '') notify(text);
 		if (tspin || cleared == 4) playSnd('ClearTetra', true);
