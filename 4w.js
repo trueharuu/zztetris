@@ -1457,14 +1457,14 @@ function callback() {
         }
 
         if (cleared > 0) {
-            if (tspin) b2b += 1;
+            if (tspin || cleared == 4) b2b += 1;
             else b2b = -1;
         }
 
         text = '';
         
         if (combo > 0) text += combo.toString() + "_COMBO\n";
-        if (b2b > 0 && tspin) text += 'B2B ';
+        if (b2b > 0 && (tspin || cleared == 4)) text += 'B2B ';
 		if (mini) text += 'MINI ';
 		if (tspin) text += 'T-SPIN ';
 		if (cleared > 4) cleared = 4; // nani
