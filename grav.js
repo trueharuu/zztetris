@@ -410,14 +410,14 @@ function exportFumen() {
 	fumen = encode(board);
 	console.log(fumen);
 	navigator.clipboard.writeText(fumen);
-	window.open('https://harddrop.com/fumen/?' + fumen, '_blank');
+	window.open('https://swng.github.io/fumen/?' + fumen, '_blank');
 }
 
 function exportFullFumen() {
 	fumen = fullEncode(hist);
 	console.log(fumen);
     navigator.clipboard.writeText(fumen);
-    window.open('https://harddrop.com/fumen/?' + fumen, '_blank');
+    window.open('https://swng.github.io/fumen/?' + fumen, '_blank');
 }
 
 async function importImage() {
@@ -1137,7 +1137,7 @@ function callback() {
 			arrDelay = 0;
 			shiftReleased = true;
 			shiftDir = -1;
-
+            charged = false;
 			dasID++;
 			das('L', dasID);
 		}
@@ -1146,7 +1146,7 @@ function callback() {
 			arrDelay = 0;
 			shiftReleased = true;
 			shiftDir = 1;
-
+            charged = false;
 			dasID++;
 			das('R', dasID);
 		}

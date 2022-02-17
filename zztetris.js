@@ -1137,7 +1137,7 @@ function callback() {
 			arrDelay = 0;
 			shiftReleased = true;
 			shiftDir = -1;
-
+            charged = false;
 			dasID++;
 			das('L', dasID);
 		}
@@ -1146,7 +1146,7 @@ function callback() {
 			arrDelay = 0;
 			shiftReleased = true;
 			shiftDir = 1;
-
+            charged = false;
 			dasID++;
 			das('R', dasID);
 		}
