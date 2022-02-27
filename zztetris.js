@@ -416,8 +416,8 @@ async function exportFumen() {
 async function exportFullFumen() {
 	fumen = fullEncode(hist);
 	console.log(fumen);
-    await navigator.clipboard.writeText(fumen);
-    window.open('https://swng.github.io/fumen/?' + fumen, '_blank');
+	await navigator.clipboard.writeText(fumen);
+	window.open('https://swng.github.io/fumen/?' + fumen, '_blank');
 }
 
 async function importImage() {
@@ -648,15 +648,15 @@ function fullMirror() {
 }
 
 function garbage(column, amount = 1) {
-    for (i = 0; i < amount; i++) {
-        garbageRow = new Array(10).fill({ t: 1, c: 'X' });
-        garbageRow[column] = { t: 0, c: '' };
-        board.shift();
-        board.push(garbageRow);
-    }
-    xPOS = spawn[0];
+	for (i = 0; i < amount; i++) {
+		garbageRow = new Array(10).fill({ t: 1, c: 'X' });
+		garbageRow[column] = { t: 0, c: '' };
+		board.shift();
+		board.push(garbageRow);
+	}
+	xPOS = spawn[0];
 	yPOS = spawn[1];
-    updateGhost();    
+	updateGhost();
 }
 
 function aboutPopup() {
@@ -859,8 +859,8 @@ function restart() {
 	xGHO = spawn[0];
 	yGHO = spawn[1];
 
-    combo = -1;
-    b2b = -1;
+	combo = -1;
+	b2b = -1;
 	newPiece();
 }
 
@@ -1013,9 +1013,48 @@ function callback() {
 			piece: piece,
 		},
 	];
-    histPos = 0;
-    combo = -1;
-    b2b = -1;
+	histPos = 0;
+	combo = -1;
+	b2b = -1;
+
+    fullQuery = window.location.search;
+    if (fullQuery.length > 0 && fullQuery[0] == '?') {
+        queries = fullQuery.slice(1).split('&');
+		for (let query of queries) {
+            if (query.length > 0) {
+                if (query.slice(0, 6) == 'fumen=') {
+					// waow lazy handling
+                    fumen = query.slice(6);
+                    try {
+                        result = fullDecode(fumen, hist[0]);
+                        hist = JSON.parse(JSON.stringify(result));
+                        histPos = 0;
+                        board = JSON.parse(hist[0]['board']);
+                        xPOS = spawn[0];
+                        yPOS = spawn[1];
+                        rot = 0;
+                        clearActive();
+                        updateGhost();
+                        setShape();
+                    } catch (error) { console.log(error);}
+				}
+                if (query.slice(0, 4) == 'pos=') {
+                    pos = parseInt(query.slice(4));
+                    if (!isNaN(pos) && hist.length > pos) {
+                        histPos = pos;
+                        board = JSON.parse(hist[pos]['board']);
+                        POS = spawn[0];
+                        yPOS = spawn[1];
+                        rot = 0;
+                        clearActive();
+                        updateGhost();
+                        setShape();
+                    }
+				}
+			}
+		}
+	}
+
 	setInterval(() => {
 		if (document.getElementById('grav').checked) move('SD');
 	}, 700);
@@ -1137,7 +1176,7 @@ function callback() {
 			arrDelay = 0;
 			shiftReleased = true;
 			shiftDir = -1;
-            charged = false;
+			charged = false;
 			dasID++;
 			das('L', dasID);
 		}
@@ -1146,7 +1185,7 @@ function callback() {
 			arrDelay = 0;
 			shiftReleased = true;
 			shiftDir = 1;
-            charged = false;
+			charged = false;
 			dasID++;
 			das('R', dasID);
 		}
@@ -1171,8 +1210,8 @@ function callback() {
 			dasID++;
 			//charged = false;
 		} else if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
-			dasID++;
-			charged = false;
+			//dasID++;
+			//charged = false;
 		}
 
 		/*
@@ -1299,23 +1338,22 @@ function callback() {
 			board.unshift(aRow());
 		}
 
-        if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) pc = true;
-        
-        if (cleared == 0) combo = -1;
-        else {
-            combo += 1;
-        }
+		if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) pc = true;
 
-        if (cleared > 0) {
-            if (tspin || cleared == 4) b2b += 1;
-            else b2b = -1;
-        }
+		if (cleared == 0) combo = -1;
+		else {
+			combo += 1;
+		}
 
+		if (cleared > 0) {
+			if (tspin || cleared == 4) b2b += 1;
+			else b2b = -1;
+		}
 
-        text = '';
-        if (combo > 0) text += combo.toString() + "_COMBO\n";
-        if (b2b > 0 && (tspin || cleared == 4)) text += 'B2B ';
-        if (mini) text += 'MINI ';
+		text = '';
+		if (combo > 0) text += combo.toString() + '_COMBO\n';
+		if (b2b > 0 && (tspin || cleared == 4)) text += 'B2B ';
+		if (mini) text += 'MINI ';
 		if (tspin) text += 'T-SPIN ';
 		if (cleared > 4) cleared = 4; // nani
 		if (cleared > 0) text += ['NULL', 'SINGLE', 'DOUBLE', 'TRIPLE', 'QUAD'][cleared];
