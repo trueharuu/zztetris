@@ -84,10 +84,14 @@
                     //sanitization
                     if ('SZLJIOT'.includes(currQueue[j])) temp.push(currQueue[j]);
                 }
-                if (temp.length > 0) {
-                    temp.push('|'); // could probably insert one every 7 pieces but am too lazy
-                    currHist['queue'] = JSON.stringify(temp);
+                temp.push('|');
+                while (temp.length < 10) {
+                    var shuf = names.shuffle();
+                    shuf.map((p) => temp.push(p));
+                    temp.push('|');
                 }
+                currHist['queue'] = JSON.stringify(temp);
+                
             }
     
             newHist.push(currHist);
