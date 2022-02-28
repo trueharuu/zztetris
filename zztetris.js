@@ -593,7 +593,8 @@ async function importFullFumen() {
 	rot = 0;
 	clearActive();
 	updateGhost();
-	setShape();
+    setShape();
+    updateQueue();
 }
 
 function mirror() {
@@ -1041,7 +1042,8 @@ function callback() {
 						rot = 0;
 						clearActive();
 						updateGhost();
-						setShape();
+                        setShape();
+                        updateQueue();
 					} catch (error) {
 						console.log(error);
 					}
