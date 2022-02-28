@@ -585,6 +585,9 @@ async function importFullFumen() {
 	hist = JSON.parse(JSON.stringify(result));
 	histPos = 0;
 	board = JSON.parse(hist[0]['board']);
+	queue = JSON.parse(hist[0]['queue']);
+	holdP = hist[0]['hold'];
+	piece = hist[0]['piece'];
 	xPOS = spawn[0];
 	yPOS = spawn[1];
 	rot = 0;
@@ -1017,39 +1020,47 @@ function callback() {
 	combo = -1;
 	b2b = -1;
 
-    fullQuery = window.location.search;
-    if (fullQuery.length > 0 && fullQuery[0] == '?') {
-        queries = fullQuery.slice(1).split('&');
+	fullQuery = window.location.search;
+	if (fullQuery.length > 0 && fullQuery[0] == '?') {
+		queries = fullQuery.slice(1).split('&');
 		for (let query of queries) {
-            if (query.length > 0) {
-                if (query.slice(0, 6) == 'fumen=') {
+			if (query.length > 0) {
+				if (query.slice(0, 6) == 'fumen=') {
 					// waow lazy handling
-                    fumen = query.slice(6);
-                    try {
-                        result = fullDecode(fumen, hist[0]);
-                        hist = JSON.parse(JSON.stringify(result));
-                        histPos = 0;
-                        board = JSON.parse(hist[0]['board']);
-                        xPOS = spawn[0];
-                        yPOS = spawn[1];
-                        rot = 0;
-                        clearActive();
-                        updateGhost();
-                        setShape();
-                    } catch (error) { console.log(error);}
+					fumen = query.slice(6);
+					try {
+						result = fullDecode(fumen, hist[0]);
+						hist = JSON.parse(JSON.stringify(result));
+						histPos = 0;
+						board = JSON.parse(hist[0]['board']);
+						queue = JSON.parse(hist[0]['queue']);
+						holdP = hist[0]['hold'];
+						piece = hist[0]['piece'];
+						xPOS = spawn[0];
+						yPOS = spawn[1];
+						rot = 0;
+						clearActive();
+						updateGhost();
+						setShape();
+					} catch (error) {
+						console.log(error);
+					}
 				}
-                if (query.slice(0, 4) == 'pos=') {
-                    pos = parseInt(query.slice(4));
-                    if (!isNaN(pos) && hist.length > pos) {
-                        histPos = pos;
+				if (query.slice(0, 4) == 'pos=') {
+					pos = parseInt(query.slice(4));
+					if (!isNaN(pos) && hist.length > pos) {
+						histPos = pos;
                         board = JSON.parse(hist[pos]['board']);
-                        POS = spawn[0];
-                        yPOS = spawn[1];
-                        rot = 0;
-                        clearActive();
-                        updateGhost();
-                        setShape();
-                    }
+                        queue = JSON.parse(hist[pos]['queue']);
+						holdP = hist[pos]['hold'];
+						piece = hist[pos]['piece'];
+						POS = spawn[0];
+						yPOS = spawn[1];
+						rot = 0;
+						clearActive();
+						updateGhost();
+						setShape();
+					}
 				}
 			}
 		}

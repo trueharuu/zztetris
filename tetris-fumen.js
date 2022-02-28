@@ -55,13 +55,42 @@
                 }
                 tempBoard.push(row);
             }
-            newHist.push({
+    
+            currHist = {
                 board: JSON.stringify(tempBoard),
                 queue: oldHist['queue'],
                 hold: oldHist['hold'],
-                piece: oldHist['piece']
+                piece: oldHist['piece'],
+            };
     
-            })
+            comment = pages[i]['comment'];
+    
+            if (pages[i]['flags']['quiz'] && comment.substring(0, 3) == '#Q=') {
+                bracketStart = comment.indexOf('[');
+                bracketEnd = comment.indexOf(']');
+                if (bracketStart >= 0 && bracketEnd == bracketStart + 2 && 'SZLJIOT'.includes(comment[bracketStart + 1])) {
+                    currHist['hold'] = comment[bracketStart + 1];
+                } else currHist['hold'] = '';
+                
+                bracketStart = comment.indexOf('(');
+                bracketEnd = comment.indexOf(')');
+                if (bracketStart >= 0 && bracketEnd == bracketStart + 2 && 'SZLJIOT'.includes(comment[bracketStart + 1])) {
+                    currHist['piece'] = comment[bracketStart + 1];
+                }
+                
+                currQueue = comment.substring(bracketEnd + 1);
+                temp = [];
+                for (j = 0; j < currQueue.length; j++) {
+                    //sanitization
+                    if ('SZLJIOT'.includes(currQueue[j])) temp.push(currQueue[j]);
+                }
+                if (temp.length > 0) {
+                    temp.push('|'); // could probably insert one every 7 pieces but am too lazy
+                    currHist['queue'] = JSON.stringify(temp);
+                }
+            }
+    
+            newHist.push(currHist);
         }
         return newHist;
     };
@@ -535,7 +564,7 @@
             // Parse comment
             var comment = void 0;
             if (action.comment) {
-                // コメントに更新があるとき
+                // πé│πâíπâ│πâêπü½µ¢┤µû░πüîπüéπéïπü¿πüì
                 var commentValues = [];
                 var commentLength = buffer.poll(2);
                 for (var commentCounter = 0; commentCounter < Math.floor((commentLength + 3) / 4); commentCounter += 1) {
@@ -565,17 +594,17 @@
                 }
             }
             else if (pageIndex === 0) {
-                // コメントに更新がないが、先頭のページのとき
+                // πé│πâíπâ│πâêπü½µ¢┤µû░πüîπü¬πüäπüîπÇüσàêΘá¡πü«πâÜπâ╝πé╕πü«πü¿πüì
                 comment = { text: '' };
             }
             else {
-                // コメントに更新がないとき
+                // πé│πâíπâ│πâêπü½µ¢┤µû░πüîπü¬πüäπü¿πüì
                 comment = {
                     text: store.quiz !== undefined ? store.quiz.format().toString() : undefined,
                     ref: store.refIndex.comment,
                 };
             }
-            // Quiz用の操作を取得し、次ページ開始時点のQuizに1手進める
+            // Quizτö¿πü«µôìΣ╜£πéÆσÅûσ╛ùπüùπÇüµ¼íπâÜπâ╝πé╕ΘûïσºïµÖéτé╣πü«Quizπü½1µëïΘÇ▓πéüπéï
             var quiz = false;
             if (store.quiz !== undefined) {
                 quiz = true;
@@ -597,21 +626,21 @@
                     }
                 }
             }
-            // データ処理用に加工する
+            // πâçπâ╝πé┐σçªτÉåτö¿πü½σèáσ╖ÑπüÖπéï
             var currentPiece = void 0;
             if (action.piece.type !== defines_1.Piece.Empty) {
                 currentPiece = action.piece;
             }
-            // pageの作成
+            // pageπü«Σ╜£µêÉ
             var field = void 0;
             if (currentFieldObj.changed || pageIndex === 0) {
-                // フィールドに変化があったとき
-                // フィールドに変化がなかったが、先頭のページだったとき
+                // πâòπéúπâ╝πâ½πâëπü½σñëσîûπüîπüéπüúπüƒπü¿πüì
+                // πâòπéúπâ╝πâ½πâëπü½σñëσîûπüîπü¬πüïπüúπüƒπüîπÇüσàêΘá¡πü«πâÜπâ╝πé╕πüáπüúπüƒπü¿πüì
                 field = {};
                 store.refIndex.field = pageIndex;
             }
             else {
-                // フィールドに変化がないとき
+                // πâòπéúπâ╝πâ½πâëπü½σñëσîûπüîπü¬πüäπü¿πüì
                 field = { ref: store.refIndex.field };
             }
             pages.push(new Page(pageIndex, currentFieldObj.field, currentPiece !== undefined ? field_1.Mino.from({
@@ -786,18 +815,18 @@
         var updateField = function (prev, current) {
             var _a = encodeField(prev, current), changed = _a.changed, values = _a.values;
             if (changed) {
-                // フィールドを記録して、リピートを終了する
+                // πâòπéúπâ╝πâ½πâëπéÆΦ¿ÿΘî▓πüùπüªπÇüπâ¬πâöπâ╝πâêπéÆτ╡éΣ║åπüÖπéï
                 buffer.merge(values);
                 lastRepeatIndex = -1;
             }
             else if (lastRepeatIndex < 0 || buffer.get(lastRepeatIndex) === buffer_1.Buffer.tableLength - 1) {
-                // フィールドを記録して、リピートを開始する
+                // πâòπéúπâ╝πâ½πâëπéÆΦ¿ÿΘî▓πüùπüªπÇüπâ¬πâöπâ╝πâêπéÆΘûïσºïπüÖπéï
                 buffer.merge(values);
                 buffer.push(0);
                 lastRepeatIndex = buffer.length - 1;
             }
             else if (buffer.get(lastRepeatIndex) < (buffer_1.Buffer.tableLength - 1)) {
-                // フィールドは記録せず、リピートを進める
+                // πâòπéúπâ╝πâ½πâëπü»Φ¿ÿΘî▓πü¢πüÜπÇüπâ¬πâöπâ╝πâêπéÆΘÇ▓πéüπéï
                 var currentRepeatValue = buffer.get(lastRepeatIndex);
                 buffer.set(lastRepeatIndex, currentRepeatValue + 1);
             }
@@ -813,9 +842,9 @@
             var currentPage = pages[index];
             var field = currentPage.field;
             var currentField = field !== undefined ? inner_field_1.createInnerField(field) : prevField.copy();
-            // フィールドの更新
+            // πâòπéúπâ╝πâ½πâëπü«µ¢┤µû░
             updateField(prevField, currentField);
-            // アクションの更新
+            // πéóπé»πé╖πâºπâ│πü«µ¢┤µû░
             var currentComment = currentPage.comment !== undefined
                 ? ((index !== 0 || currentPage.comment !== '') ? currentPage.comment : undefined)
                 : undefined;
@@ -889,12 +918,12 @@
             };
             var actionNumber = actionEncoder.encode(action);
             buffer.push(actionNumber, 3);
-            // コメントの更新
+            // πé│πâíπâ│πâêπü«µ¢┤µû░
             if (nextComment !== undefined) {
                 var comment = escape(currentPage.comment);
                 var commentLength = Math.min(comment.length, 4095);
                 buffer.push(commentLength, 2);
-                // コメントを符号化
+                // πé│πâíπâ│πâêπéÆτ¼ªσÅ╖σîû
                 for (var index_1 = 0; index_1 < commentLength; index_1 += 4) {
                     var value = 0;
                     for (var count = 0; count < 4; count += 1) {
@@ -911,7 +940,7 @@
             else if (currentPage.comment === undefined) {
                 prevComment = undefined;
             }
-            // 地形の更新
+            // σ£░σ╜óπü«µ¢┤µû░
             if (action.lock) {
                 if (defines_1.isMinoPiece(action.piece.type)) {
                     currentField.fill(action.piece);
@@ -929,38 +958,38 @@
         for (var index = 0; index < pages.length; index += 1) {
             innerEncode(index);
         }
-        // テト譜が短いときはそのまま出力する
-        // 47文字ごとに?が挿入されるが、実際は先頭にv115@が入るため、最初の?は42文字後になる
+        // πâåπâêΦ¡£πüîτƒ¡πüäπü¿πüìπü»πü¥πü«πü╛πü╛σç║σè¢πüÖπéï
+        // 47µûçσ¡ùπüöπü¿πü½?πüîµî┐σàÑπüòπéîπéïπüîπÇüσ«ƒΘÜ¢πü»σàêΘá¡πü½v115@πüîσàÑπéïπüƒπéüπÇüµ£Çσê¥πü«?πü»42µûçσ¡ùσ╛îπü½πü¬πéï
         var data = buffer.toString();
         if (data.length < 41) {
             return data;
         }
-        // ?を挿入する
+        // ?πéÆµî┐σàÑπüÖπéï
         var head = [data.substr(0, 42)];
         var tails = data.substring(42);
         var split = tails.match(/[\S]{1,47}/g) || [];
         return head.concat(split).join('?');
     }
     exports.encode = encode;
-    // フィールドをエンコードする
-    // 前のフィールドがないときは空のフィールドを指定する
-    // 入力フィールドの高さは23, 幅は10
+    // πâòπéúπâ╝πâ½πâëπéÆπé¿πâ│πé│πâ╝πâëπüÖπéï
+    // σëìπü«πâòπéúπâ╝πâ½πâëπüîπü¬πüäπü¿πüìπü»τ⌐║πü«πâòπéúπâ╝πâ½πâëπéÆµîçσ«ÜπüÖπéï
+    // σàÑσè¢πâòπéúπâ╝πâ½πâëπü«Θ½ÿπüòπü»23, σ╣àπü»10
     function encodeField(prev, current) {
         var FIELD_TOP = 23;
         var FIELD_MAX_HEIGHT = FIELD_TOP + 1;
         var FIELD_BLOCKS = FIELD_MAX_HEIGHT * FieldConstants.Width;
         var buffer = new buffer_1.Buffer();
-        // 前のフィールドとの差を計算: 0〜16
+        // σëìπü«πâòπéúπâ╝πâ½πâëπü¿πü«σ╖«πéÆΦ¿êτ«ù: 0πÇ£16
         var getDiff = function (xIndex, yIndex) {
             var y = FIELD_TOP - yIndex - 1;
             return current.getNumberAt(xIndex, y) - prev.getNumberAt(xIndex, y) + 8;
         };
-        // データの記録
+        // πâçπâ╝πé┐πü«Φ¿ÿΘî▓
         var recordBlockCounts = function (diff, counter) {
             var value = diff * FIELD_BLOCKS + counter;
             buffer.push(value, 2);
         };
-        // フィールド値から連続したブロック数に変換
+        // πâòπéúπâ╝πâ½πâëσÇñπüïπéëΘÇúτ╢Üπüùπüƒπâûπâ¡πââπé»µò░πü½σñëµÅ¢
         var changed = false;
         var prev_diff = getDiff(0, 0);
         var counter = -1;
@@ -978,7 +1007,7 @@
                 }
             }
         }
-        // 最後の連続ブロックを処理
+        // µ£Çσ╛îπü«ΘÇúτ╢Üπâûπâ¡πââπé»πéÆσçªτÉå
         recordBlockCounts(prev_diff, counter);
         return {
             changed: changed,
@@ -1570,7 +1599,7 @@
             if (usedName === hold) {
                 return Operation.Swap;
             }
-            // 次のミノを利用できる
+            // µ¼íπü«πâƒπâÄπéÆσê⌐τö¿πüºπüìπéï
             if (hold === '') {
                 if (usedName === this.next) {
                     return Operation.Stock;
