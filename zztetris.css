@@ -51,3 +51,35 @@ input[type='radio'] {
 footer {
 	width: 100%;
 }
+
+
+.tc {
+	position: absolute;
+	bottom: 0;
+    left: 0;
+	text-align: right;
+	padding: 10px;
+	pointer-events: none;
+	z-index: 11;
+    display: none;
+}
+.tc span {
+	width: 90px;
+	height: 90px;
+	border: 3px solid #fff;
+	background-color: #87cefa;
+	opacity: 0.4;
+	margin: 6px 1px;
+	vertical-align: text-bottom;
+	pointer-events: auto;
+	padding: 15px 17px;
+	display: inline-block;
+}
+.tc span.tc-active {
+	opacity: 1;
+}
+.tc span svg {
+	width: 80px;
+	height: 80px;
+	pointer-events: none;
+}

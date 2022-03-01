@@ -325,6 +325,16 @@ document.getElementById('h').addEventListener('click', (event) => {
 	}
 });
 
+const ua = navigator.userAgent;
+if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+    console.log("why do you even have a tablet");
+    document.getElementById("tcc").style.display = 'inline-block';
+}
+else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+    console.log("mobile is bad and you should feel bad");
+    document.getElementById("tcc").style.display = 'inline-block';
+} // else document.getElementById("tcc").style.display = 'none';
+
 // import/export stuff
 
 async function importTetrio() {
@@ -956,7 +966,84 @@ function callback() {
 	keysDown = 0;
 	lastKeys = 0;
 	shiftDir = 0;
-	shiftReleased = true;
+    shiftReleased = true;
+
+    document.getElementById('tc-re').addEventListener("touchstart", function (e) {
+        input = 'RE';
+        keysDown |= flags[input];
+        restart();
+    });
+
+    document.getElementById('tc-hd').addEventListener("touchstart", function (e) {
+        input = 'HD';
+        keysDown |= flags[input];
+        hardDrop();
+    });
+
+    document.getElementById('tc-h').addEventListener("touchstart", function (e) {
+        input = 'HL';
+        keysDown |= flags[input];
+        hold();
+    });
+
+    document.getElementById('tc-dr').addEventListener("touchstart", function (e) {
+        input = 'R180';
+        keysDown |= flags[input];
+        rotate('R180');
+    });
+    
+    document.getElementById('tc-cc').addEventListener("touchstart", function (e) {
+        input = 'CCW';
+        keysDown |= flags[input];
+        rotate('CCW');
+    });
+
+    document.getElementById('tc-c').addEventListener("touchstart", function (e) {
+        input = 'CW';
+        keysDown |= flags[input];
+        rotate('CW');
+    });
+
+    document.getElementById('tc-d').addEventListener("touchstart", function (e) {
+        input = 'SD';
+        keysDown |= flags[input];
+        sdID++;
+        softDrop(sdID);
+    });
+
+    document.getElementById('tc-d').addEventListener("touchend", function (e) {
+        input = 'SD';
+        if (keysDown & flags[input]) keysDown ^= flags[input];
+        sdID++;
+    });
+
+    document.getElementById('tc-r').addEventListener("touchstart", function (e) {
+        input = 'R';
+        keysDown |= flags[input];
+    });
+
+    document.getElementById('tc-r').addEventListener("touchend", function (e) {
+        input = 'R';
+        if (keysDown & flags[input]) keysDown ^= flags[input];
+        if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
+            dasID++;
+            charged = false;
+        }
+    });
+
+    document.getElementById('tc-l').addEventListener("touchstart", function (e) {
+        input = 'L';
+        keysDown |= flags[input];
+    });
+
+    document.getElementById('tc-l').addEventListener("touchend", function (e) {
+        input = 'L';
+        if (keysDown & flags[input]) keysDown ^= flags[input];
+        if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
+            dasID++;
+            charged = false;
+        }
+    });
 
 	document.addEventListener('keydown', function (e) {
 		const input = ctrl[e.code];
