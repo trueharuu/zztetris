@@ -1,5 +1,7 @@
 # zztetris
 
+Link to discord for this project: https://discord.gg/Z3qDF4DVxJ
+
 a tetris client with a name that starts with zz so you can type zz and have it autocomplete
 
 forked from aznguy's schoolteto, a number of features added
