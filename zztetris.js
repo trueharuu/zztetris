@@ -160,6 +160,53 @@ keys.map((k, idx) => {
 	i.src = imgs[k];
 });
 
+function PRNG(seed) {
+	let _seed = parseInt(seed) % 2147483647;
+
+	if (_seed <= 0) {
+		_seed += 2147483646;
+	}
+
+	return {
+		next: function () {
+			return (_seed = (_seed * 16807) % 2147483647);
+		},
+		nextFloat: function (opt_minOrMax, opt_max) {
+			return (this.next() - 1) / 2147483646;
+		},
+		shuffleArray: function (array) {
+			let i = array.length;
+			let j;
+
+			if (i == 0) {
+				return array;
+			}
+
+			while (--i) {
+				j = Math.floor(this.nextFloat() * (i + 1));
+				[array[i], array[j]] = [array[j], array[i]];
+			}
+			return array;
+		},
+		getCurrentSeed: function () {
+			return _seed;
+		},
+	};
+}
+
+function generateTetrioQueue(seed, pieceCount) {
+    num_bags = Math.ceil(pieceCount / 7);
+	vo = { minotypes: ['z', 'l', 'o', 's', 'i', 'j', 't'] };
+	rng = PRNG(seed);
+	bag = [];
+	for (i = 0; i < num_bags; i++) {
+		e = [...vo.minotypes];
+		rng.shuffleArray(e);
+		bag.push(...e);
+    }
+    console.log(bag.join(""));
+}
+
 // Keys
 var keysDown;
 var lastKeys;
@@ -327,12 +374,13 @@ document.getElementById('h').addEventListener('click', (event) => {
 
 const ua = navigator.userAgent;
 if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
-    console.log("why do you even have a tablet");
-    document.getElementById("tcc").style.display = 'inline-block';
-}
-else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
-    console.log("mobile is bad and you should feel bad");
-    document.getElementById("tcc").style.display = 'inline-block';
+	console.log('why do you even have a tablet');
+	document.getElementById('tcc').style.display = 'inline-block';
+} else if (
+	/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)
+) {
+	console.log('mobile is bad and you should feel bad');
+	document.getElementById('tcc').style.display = 'inline-block';
 } // else document.getElementById("tcc").style.display = 'none';
 
 // import/export stuff
@@ -603,8 +651,8 @@ async function importFullFumen() {
 	rot = 0;
 	clearActive();
 	updateGhost();
-    setShape();
-    updateQueue();
+	setShape();
+	updateQueue();
 }
 
 function mirror() {
@@ -968,82 +1016,82 @@ function callback() {
 	shiftDir = 0;
     shiftReleased = true;
 
-    document.getElementById('tc-re').addEventListener("touchstart", function (e) {
-        input = 'RE';
-        keysDown |= flags[input];
-        restart();
-    });
+	document.getElementById('tc-re').addEventListener('touchstart', function (e) {
+		input = 'RE';
+		keysDown |= flags[input];
+		restart();
+	});
 
-    document.getElementById('tc-hd').addEventListener("touchstart", function (e) {
-        input = 'HD';
-        keysDown |= flags[input];
-        hardDrop();
-    });
+	document.getElementById('tc-hd').addEventListener('touchstart', function (e) {
+		input = 'HD';
+		keysDown |= flags[input];
+		hardDrop();
+	});
 
-    document.getElementById('tc-h').addEventListener("touchstart", function (e) {
-        input = 'HL';
-        keysDown |= flags[input];
-        hold();
-    });
+	document.getElementById('tc-h').addEventListener('touchstart', function (e) {
+		input = 'HL';
+		keysDown |= flags[input];
+		hold();
+	});
 
-    document.getElementById('tc-dr').addEventListener("touchstart", function (e) {
-        input = 'R180';
-        keysDown |= flags[input];
-        rotate('R180');
-    });
-    
-    document.getElementById('tc-cc').addEventListener("touchstart", function (e) {
-        input = 'CCW';
-        keysDown |= flags[input];
-        rotate('CCW');
-    });
+	document.getElementById('tc-dr').addEventListener('touchstart', function (e) {
+		input = 'R180';
+		keysDown |= flags[input];
+		rotate('R180');
+	});
 
-    document.getElementById('tc-c').addEventListener("touchstart", function (e) {
-        input = 'CW';
-        keysDown |= flags[input];
-        rotate('CW');
-    });
+	document.getElementById('tc-cc').addEventListener('touchstart', function (e) {
+		input = 'CCW';
+		keysDown |= flags[input];
+		rotate('CCW');
+	});
 
-    document.getElementById('tc-d').addEventListener("touchstart", function (e) {
-        input = 'SD';
-        keysDown |= flags[input];
-        sdID++;
-        softDrop(sdID);
-    });
+	document.getElementById('tc-c').addEventListener('touchstart', function (e) {
+		input = 'CW';
+		keysDown |= flags[input];
+		rotate('CW');
+	});
 
-    document.getElementById('tc-d').addEventListener("touchend", function (e) {
-        input = 'SD';
-        if (keysDown & flags[input]) keysDown ^= flags[input];
-        sdID++;
-    });
+	document.getElementById('tc-d').addEventListener('touchstart', function (e) {
+		input = 'SD';
+		keysDown |= flags[input];
+		sdID++;
+		softDrop(sdID);
+	});
 
-    document.getElementById('tc-r').addEventListener("touchstart", function (e) {
-        input = 'R';
-        keysDown |= flags[input];
-    });
+	document.getElementById('tc-d').addEventListener('touchend', function (e) {
+		input = 'SD';
+		if (keysDown & flags[input]) keysDown ^= flags[input];
+		sdID++;
+	});
 
-    document.getElementById('tc-r').addEventListener("touchend", function (e) {
-        input = 'R';
-        if (keysDown & flags[input]) keysDown ^= flags[input];
-        if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
-            dasID++;
-            charged = false;
-        }
-    });
+	document.getElementById('tc-r').addEventListener('touchstart', function (e) {
+		input = 'R';
+		keysDown |= flags[input];
+	});
 
-    document.getElementById('tc-l').addEventListener("touchstart", function (e) {
-        input = 'L';
-        keysDown |= flags[input];
-    });
+	document.getElementById('tc-r').addEventListener('touchend', function (e) {
+		input = 'R';
+		if (keysDown & flags[input]) keysDown ^= flags[input];
+		if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
+			dasID++;
+			charged = false;
+		}
+	});
 
-    document.getElementById('tc-l').addEventListener("touchend", function (e) {
-        input = 'L';
-        if (keysDown & flags[input]) keysDown ^= flags[input];
-        if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
-            dasID++;
-            charged = false;
-        }
-    });
+	document.getElementById('tc-l').addEventListener('touchstart', function (e) {
+		input = 'L';
+		keysDown |= flags[input];
+	});
+
+	document.getElementById('tc-l').addEventListener('touchend', function (e) {
+		input = 'L';
+		if (keysDown & flags[input]) keysDown ^= flags[input];
+		if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
+			dasID++;
+			charged = false;
+		}
+	});
 
 	document.addEventListener('keydown', function (e) {
 		const input = ctrl[e.code];
@@ -1129,8 +1177,8 @@ function callback() {
 						rot = 0;
 						clearActive();
 						updateGhost();
-                        setShape();
-                        updateQueue();
+						setShape();
+						updateQueue();
 					} catch (error) {
 						console.log(error);
 					}
@@ -1423,20 +1471,22 @@ function callback() {
 			}
 		}
 
-		board = board.filter(
-			(r) =>
-				!r
-					.map((c) => {
-						return c.t == 1;
-					})
-					.every((v) => v)
-		);
+		clearedIndexes = [];
+
+		board = board.filter((r, i) => {
+			temp = !r
+				.map((c) => {
+					return c.t == 1;
+				})
+				.every((v) => v);
+			if (!temp) clearedIndexes.push(i);
+			return temp;
+		});
 		var l = board.length;
-		var cleared = 0;
 		for (let i = 0; i < boardSize[1] - l; i++) {
-			cleared++;
 			board.unshift(aRow());
 		}
+		var cleared = clearedIndexes.length;
 
 		if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) pc = true;
 
