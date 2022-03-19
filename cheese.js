@@ -56,14 +56,14 @@ const reversed = {
 	'|': '|',
 };
 var imgs = {
-	grid: './grid.png',
-	Z: './pieceSprite/z.png',
-	L: './pieceSprite/l.png',
-	O: './pieceSprite/o.png',
-	S: './pieceSprite/s.png',
-	I: './pieceSprite/i.png',
-	J: './pieceSprite/j.png',
-	T: './pieceSprite/t.png',
+	grid: './assets/pieceSprite/grid.png',
+	Z: './assets/pieceSprite/z.png',
+	L: './assets/pieceSprite/l.png',
+	O: './assets/pieceSprite/o.png',
+	S: './assets/pieceSprite/s.png',
+	I: './assets/pieceSprite/i.png',
+	J: './assets/pieceSprite/j.png',
+	T: './assets/pieceSprite/t.png',
 };
 var cellSize = 20; // pixels
 var boardSize = [10, 40];
@@ -1041,7 +1041,7 @@ function callback() {
 
 	function playSnd(sfx, overlap) {
 		if (sfxCache[sfx] && !overlap) return sfxCache[sfx].play();
-		var s = new Audio(`sfx/${sfx}.wav`);
+		var s = new Audio(`assets/sfx/${sfx}.wav`);
 		sfxCache[sfx] = s;
 		s.play();
 	}
