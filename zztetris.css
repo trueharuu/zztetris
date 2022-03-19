@@ -1,6 +1,6 @@
 @font-face {
 	font-family: Muro;
-	src: url('Muroslant.otf');
+	src: url('fonts/Muroslant.otf');
 }
 @font-face {
 	font-family: Hun;
@@ -8,7 +8,7 @@
 }
 @font-face {
 	font-family: SLANT;
-	src: url('Sunmoreslantfree-DOMDx.ttf');
+	src: url('fonts/Sunmoreslantfree-DOMDx.ttf');
 }
 body {
     font-family: SLANT;

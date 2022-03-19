@@ -1,6 +1,6 @@
 # zztetris
 
-Link to discord for this project: https://discord.gg/Z3qDF4DVxJ
+Link to discord for this project: <https://discord.gg/Z3qDF4DVxJ>
 
 a tetris client with a name that starts with zz so you can type zz and have it autocomplete
 
@@ -37,7 +37,7 @@ autocoloring toggle
 queue editing prompt
 adding garbage added
 
+## TODO
 
-To Do:
-fix DAS stuff more?
-add alternate kick tables
+- fix DAS stuff more?
+- add alternate kick tables
