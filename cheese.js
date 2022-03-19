@@ -56,7 +56,7 @@ const reversed = {
 	'|': '|',
 };
 var imgs = {
-	grid: './grid.png',
+	grid: './assets/pieceSprite/grid.png',
 	Z: './assets/pieceSprite/z.png',
 	L: './assets/pieceSprite/l.png',
 	O: './assets/pieceSprite/o.png',
