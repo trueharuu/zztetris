@@ -1,23 +1,24 @@
 # zztetris
 
-Link to discord for this project: https://discord.gg/Z3qDF4DVxJ
+**Join the [Project Discord](https://discord.gg/Z3qDF4DVxJ)!**
 
-a tetris client with a name that starts with zz so you can type zz and have it autocomplete
+A tetris client with a name that starts with zz so you can type zz and have it autocomplete
 
-forked from aznguy's schoolteto, a number of features added
+Forked from [aznguy's schoolteto](https://github.com/aznguymp4/schoolTeto) with a number of features added
 
-inspired by fio's four-tris
+Inspired by fio's four-tris
 
----
+## Features (probably buggy lol)
 
-Fumen import/export / image import works through your clipboard.  
-Undo/redo is a thing. It keeps track of your board state history.
-*Full* fumen import/export sets your board state history as the fumen pages and vice versa.
-Drawing on the board is a thing.
+- Fumen import/export
+- Image import works through clipboard
+- Undo/redo with board history
+- *Full* fumen import/export sets your board state history as the fumen pages and vice versa.
+- Drawing garbage on the board
 
----
+## Changelog
 
-Changelog
+*Do we need this changelog? I feel like git messages and maybe tags are good enough. - g3ner1c*
 
 Add 2 visible rows to the top of board; pieces spawn 2 higher
 top out detection
@@ -37,7 +38,7 @@ autocoloring toggle
 queue editing prompt
 adding garbage added
 
+## TODO
 
-To Do:
-fix DAS stuff more?
-add alternate kick tables
+- fix DAS stuff more?
+- add alternate kick tables
