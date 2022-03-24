@@ -1,7 +1,7 @@
 const print = console.log;
-const LS = localStorage;
+const LS = localStorage; // client side data storage
 
-export function ctrlsPopup() { // opens a popup window with keybinds
+function ctrlsPopup() { // opens a popup window with keybinds
 
 	const p = window.open('controls.html', 'popup', 'width=1200,height=800');
 	var reloading = false;
@@ -65,6 +65,8 @@ Object.defineProperty(Array.prototype, 'shuffle', {
 
 var ctrl = { // default controls
 
+	//? should probably add handling settings in here - g3ner1c
+
 	ArrowLeft: 'L',
 	ArrowRight: 'R',
 	ArrowDown: 'SD',
@@ -118,35 +120,55 @@ var imgs = { // piece images
 var cellSize = 20; // pixels
 var boardSize = [10, 40];
 var hiddenRows = 20; // starts from the top
+
+// default settings
 var DAS = 160;
 var ARR = 30;
 var SDR = 15;
 
-var ctrlsDat = LS.config;
-if (ctrlsDat && LS.version == '2021-10-12a') {
+
+//* client side config storage
+
+//? Sketchy settings processing probably could be simplified
+//? Should probably add handling settings in here in the future - g3ner1c
+
+if (LS.config && LS.version == '2021-10-12a') {
+
 	// Load saved config from LocalStorage
-	var ctrls = JSON.parse(ctrlsDat);
-	var codes = Object.values(ctrl);
+
+	const CTRLS = JSON.parse(LS.config);
+
+	let codes = Object.values(ctrl); // Action codes
+
 	ctrl = {};
 	for (let i = 0; i < 11; i++) {
-		ctrl[ctrls[i]] = codes[i];
+		ctrl[CTRLS[i]] = codes[i];
 	}
-	DAS = parseInt(ctrls[11]);
-	ARR = parseInt(ctrls[12]);
-	SDR = parseInt(ctrls[13]);
-	cellSize = parseInt(ctrls[14]);
+	DAS = parseInt(CTRLS[11]);
+	ARR = parseInt(CTRLS[12]);
+	SDR = parseInt(CTRLS[13]);
+	cellSize = parseInt(CTRLS[14]);
+
 } else {
+
 	// No config found or outdated version, make new
-	var idk = Object.keys(ctrl);
-	idk.push('160', '30', '15', '20');
-	LS.config = JSON.stringify(idk);
+
+	let codes = Object.keys(ctrl); // Deafult keys
+	codes.push('160', '30', '15', '20'); // Handling settings
+	LS.config = JSON.stringify(codes);
 	aboutPopup();
+
 }
 
 const notf = $('#notif');
-const names = 'ZLOSIJT'.split('');
+
+const NAMES = 'ZLOSIJT'.split(''); // piece names
+
 const spawn = [Math.round(boardSize[0] / 2) - 2, hiddenRows - 3];
+
 const a = { t: 0, c: '' }; // t:0 = nothing   t:1 = heap mino   t:2 = current mino   t:3 = ghost mino
+//? ^^ ??? - g3ner1c
+
 const aRow = function () {
 	return '.'
 		.repeat(boardSize[0])
@@ -218,53 +240,6 @@ keys.map((k, idx) => {
 	};
 	i.src = imgs[k];
 });
-
-function PRNG(seed) {
-	let _seed = parseInt(seed) % 2147483647;
-
-	if (_seed <= 0) {
-		_seed += 2147483646;
-	}
-
-	return {
-		next: function () {
-			return (_seed = (_seed * 16807) % 2147483647);
-		},
-		nextFloat: function (opt_minOrMax, opt_max) {
-			return (this.next() - 1) / 2147483646;
-		},
-		shuffleArray: function (array) {
-			let i = array.length;
-			let j;
-
-			if (i == 0) {
-				return array;
-			}
-
-			while (--i) {
-				j = Math.floor(this.nextFloat() * (i + 1));
-				[array[i], array[j]] = [array[j], array[i]];
-			}
-			return array;
-		},
-		getCurrentSeed: function () {
-			return _seed;
-		},
-	};
-}
-
-function generateTetrioQueue(seed, pieceCount) {
-    num_bags = Math.ceil(pieceCount / 7);
-	vo = { minotypes: ['z', 'l', 'o', 's', 'i', 'j', 't'] };
-	rng = PRNG(seed);
-	bag = [];
-	for (i = 0; i < num_bags; i++) {
-		e = [...vo.minotypes];
-		rng.shuffleArray(e);
-		bag.push(...e);
-    }
-    console.log(bag.join(""));
-}
 
 // Keys
 var keysDown;
@@ -358,7 +333,7 @@ document.onmouseup = function mouseup() {
 			// try to determine which tetramino was drawn
 			// first entry should be the topleft one
 
-			names.forEach((name) => {
+			NAMES.forEach((name) => {
 				// jesus christ this is a large number of nested loops
 				checkPiece = pieces[name];
 				checkPiece.forEach((rot) => {
@@ -874,7 +849,7 @@ function clearActive() {
 
 function newPiece() {
 	while (queue.length < 10) {
-		var shuf = names.shuffle();
+		var shuf = NAMES.shuffle();
 		shuf.map((p) => queue.push(p));
 		queue.push('|');
 	}
@@ -1016,7 +991,7 @@ function shuffleQueue() {
 	queue = tempQueue;
 
 	while (queue.length < 10) {
-		var shuf = names.shuffle();
+		var shuf = NAMES.shuffle();
 		shuf.map((p) => queue.push(p));
 		queue.push('|');
 	}
@@ -1046,7 +1021,7 @@ function shuffleQueuePlusHold() {
 	queue = tempQueue;
 
 	while (queue.length < 10) {
-		var shuf = names.shuffle();
+		var shuf = NAMES.shuffle();
 		shuf.map((p) => queue.push(p));
 		queue.push('|');
 	}
