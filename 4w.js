@@ -40,7 +40,7 @@ var ctrl = {
 	KeyT: 'UNDO',
 	KeyY: 'REDO',
 };
-const color = {
+const COLOR = {
 	Z: '#F00',
 	L: '#F80',
 	O: '#FF0',
@@ -1491,7 +1491,7 @@ function callback() {
 			ctx.strokeRect((x - 1) * cellSize + 1, y * cellSize + 1, cellSize - 2, cellSize - 2);
 		} else if (type !== 0) {
 			// Current and Heap
-			ctx.fillStyle = color[piece];
+			ctx.fillStyle = PIECE_COLOR[piece];
 			ctx.fillRect((x - 1) * cellSize + 1, y * cellSize + 1, cellSize - 2, cellSize - 2);
 		}
 	}
