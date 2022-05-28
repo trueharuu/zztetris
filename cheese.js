@@ -7,19 +7,6 @@ function garbageHeight() {
 	return 0;
 }
 
-function aboutPopup() {
-	window.alert(`START BY ADJUSTING KEYBINDS AND SETTINGS
-zztetris
-a tetris client with a name that starts with zz so you can type zz and have it autocomplete
-forked from aznguy's schoolteto, a number of features added
-inspired by fio's four-tris
----
-Import/Export works through your clipboard.
-Undo/redo is a thing. It keeps track of your board state history.
-*Full* fumen import/export sets your board state history as the fumen pages and vice versa.
-Drawing on the board is a thing.`);
-}
-
 function restart() {
 	if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) {
 		// lazy check, will have false positives, but whatever
