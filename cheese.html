@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="rotationSystem.js"></script>
+	<script src="io.js"></script>
+	<script src="utils.js"></script>
+	<script src="tetris-fumen.js"></script>
 	<script defer src="base.js"></script>
 	<script defer src="tetrio.js"></script>
 	<script defer src="cheese.js"></script>
-	<script src="rotationSystem.js"></script>
-	<script src="io.js"></script>
-	<script src="tetris-fumen.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 	<link rel="icon" href="./assets/pieceSprite/z.png" />
 	<link rel="stylesheet" type="text/css" href="zztetris.css" />
@@ -148,5 +149,22 @@
         <a class="button" href="cheese.html">cheese</a>
         <a class="button" href="4w.html">4w</a>
         <a class="button" href="grav.html">grav</a>
+
+		<div id = "tcc" style class = "tc">
+            <div>
+                <span id="tc-dr"><svg><use xlink:href="./assets/icons/dark.svg#s-r180"></use></svg></span>
+                <span id="tc-h"><svg><use xlink:href="./assets/icons/dark.svg#s-hold"></use></svg></span>
+                <span id="tc-hd"><svg><use xlink:href="./assets/icons/dark.svg#s-harddrop"></use></svg></span>
+                </div>
+                <div>
+                <span id="tc-l"><svg><use xlink:href="./assets/icons/dark.svg#s-back"></use></svg></span>
+                <span id="tc-r"><svg><use xlink:href="./assets/icons/dark.svg#s-forward"></use></svg></span>
+                <span id="tc-d"><svg><use xlink:href="./assets/icons/dark.svg#s-down"></use></svg></span>
+                <span id="tc-cc"><svg><use xlink:href="./assets/icons/dark.svg#s-ccw"></use></svg></span>
+                <span id="tc-c"><svg><use xlink:href="./assets/icons/dark.svg#s-cw"></use></svg></span>
+                <span id="tc-re"><svg><use xlink:href="./assets/icons/dark.svg#s-reload"></use></svg></span>
+                </div>
+            <canvas id="mobile_controls"></canvas>
+        </div>
 	</body>
 </html>
