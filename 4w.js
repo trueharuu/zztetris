@@ -3,150 +3,6 @@ var aRow = function () {
 	return [aa, aa, aa, a, a, a, a, aa, aa, aa];
 };
 
-// source: https://i.imgur.com/G76TJ.gif
-res_3 = [
-	[
-		[0, 0, 0, 0],
-		[0, 0, 0, 0],
-		[1, 1, 1, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 0, 0],
-		[0, 1, 1, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[1, 0, 0, 0],
-		[1, 1, 0, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 0, 1],
-		[0, 0, 1, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[1, 1, 0, 0],
-		[1, 0, 0, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 1, 1],
-		[0, 0, 0, 1],
-    ],
-    [
-		[1, 0, 0, 0],
-		[1, 0, 0, 0],
-		[1, 0, 0, 0],
-    ],
-    [
-		[0, 0, 0, 1],
-		[0, 0, 0, 1],
-		[0, 0, 0, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[1, 1, 0, 0],
-		[0, 1, 0, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 1, 1],
-		[0, 0, 1, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 1, 0, 0],
-		[1, 1, 0, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 1, 0],
-		[0, 0, 1, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 0, 0],
-		[1, 1, 0, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 0, 0],
-		[1, 0, 1, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[1, 0, 0, 0],
-		[1, 0, 1, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 0, 1],
-		[0, 1, 0, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[1, 0, 0, 0],
-		[1, 0, 0, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 0, 1],
-		[1, 0, 0, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 1, 0, 0],
-		[1, 0, 0, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 1, 0],
-		[1, 0, 0, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 0, 1],
-		[1, 1, 0, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[1, 0, 0, 0],
-		[0, 0, 1, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 0, 1],
-		[0, 1, 1, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[1, 0, 0, 0],
-		[0, 1, 1, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 0, 0, 1],
-		[1, 0, 1, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[1, 0, 0, 0],
-		[0, 1, 0, 1],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 1, 1, 0],
-		[1, 0, 0, 0],
-    ],
-    [
-		[0, 0, 0, 0],
-		[0, 1, 1, 0],
-		[0, 0, 0, 1],
-	],
-];
-
 function aboutPopup() {
 	window.alert(`START BY ADJUSTING KEYBINDS AND SETTINGS
 zztetris
@@ -154,7 +10,7 @@ a tetris client with a name that starts with zz so you can type zz and have it a
 forked from aznguy's schoolteto, a number of features added
 inspired by fio's four-tris
 ---
-Import/Export works through your clipboard.  
+Import/Export works through your clipboard.
 Undo/redo is a thing. It keeps track of your board state history.
 *Full* fumen import/export sets your board state history as the fumen pages and vice versa.
 Drawing on the board is a thing.`);
@@ -198,7 +54,7 @@ function restart() {
 	yPOS = spawn[1];
 	xGHO = spawn[0];
     yGHO = spawn[1];
-    
+
     combo = -1;
     b2b = -1;
 	newPiece();

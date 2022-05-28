@@ -5,7 +5,7 @@ a tetris client with a name that starts with zz so you can type zz and have it a
 forked from aznguy's schoolteto, a number of features added
 inspired by fio's four-tris
 ---
-Import/Export works through your clipboard.  
+Import/Export works through your clipboard.
 Undo/redo is a thing. It keeps track of your board state history.
 *Full* fumen import/export sets your board state history as the fumen pages and vice versa.
 Drawing on the board is a thing.`);
@@ -40,7 +40,7 @@ function restart() {
 	yPOS = spawn[1];
 	xGHO = spawn[0];
     yGHO = spawn[1];
-    
+
     combo = -1;
     b2b = -1;
 	newPiece();
@@ -129,4 +129,3 @@ function updateKickTable() {
 function game(){
 	callback(gravity=4);
 }
-

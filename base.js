@@ -50,9 +50,9 @@ Object.defineProperty(Array.prototype, 'shuffle', {
 	value: function() { // shuffles array
 
 		let i = this.length, j, temp;
-	
+
 		if (i == 0) return this; // array length 0
-	
+
 		while (--i) {
 			j = Math.floor(Math.random() * (i + 1));
 			temp = this[i];
@@ -931,7 +931,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		}
 
 		/*
-        
+
 		// Handle events
 		if (shiftDir) {
 			// 1. When key pressed instantly move over once.

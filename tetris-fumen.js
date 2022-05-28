@@ -1,6 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
     const { decoder, encoder, Page, Field } = require('tetris-fumen');
-    
+
     function toPage(board) {
         FieldString = '';
         for (let row = 20; row < board.length; row++) {
@@ -14,11 +14,11 @@
             field: Field.create(FieldString),
         };
     }
-    
+
     window.decode = function decode(fumen) {
         pages = decoder.decode(fumen);
         input = pages[0]['_field']['field']['pieces'];
-    
+
         let board = new Array(17).fill(new Array(10).fill({ t: 0, c: '' })); // empty top 17 rows
         for (rowIndex = 0; rowIndex < 23; rowIndex++) {
             let row = [];
@@ -35,7 +35,7 @@
         }
         return board;
     };
-    
+
     window.fullDecode = function fullDecode(fumen, oldHist) {
         pages = decoder.decode(fumen);
         newHist = [];
@@ -55,29 +55,29 @@
                 }
                 tempBoard.push(row);
             }
-    
+
             currHist = {
                 board: JSON.stringify(tempBoard),
                 queue: oldHist['queue'],
                 hold: oldHist['hold'],
                 piece: oldHist['piece'],
             };
-    
+
             comment = pages[i]['comment'];
-    
+
             if (pages[i]['flags']['quiz'] && comment.substring(0, 3) == '#Q=') {
                 bracketStart = comment.indexOf('[');
                 bracketEnd = comment.indexOf(']');
                 if (bracketStart >= 0 && bracketEnd == bracketStart + 2 && 'SZLJIOT'.includes(comment[bracketStart + 1])) {
                     currHist['hold'] = comment[bracketStart + 1];
                 } else currHist['hold'] = '';
-                
+
                 bracketStart = comment.indexOf('(');
                 bracketEnd = comment.indexOf(')');
                 if (bracketStart >= 0 && bracketEnd == bracketStart + 2 && 'SZLJIOT'.includes(comment[bracketStart + 1])) {
                     currHist['piece'] = comment[bracketStart + 1];
                 }
-                
+
                 currQueue = comment.substring(bracketEnd + 1);
                 temp = [];
                 for (j = 0; j < currQueue.length; j++) {
@@ -91,21 +91,21 @@
                     temp.push('|');
                 }
                 currHist['queue'] = JSON.stringify(temp);
-                
+
             }
-    
+
             newHist.push(currHist);
         }
         return newHist;
     };
-    
+
     window.encode = function encode(board) {
         pages = [];
         pages.push(toPage(board));
         fumen = encoder.encode(pages);
         return fumen;
     };
-    
+
     window.fullEncode = function fullEncode(hist) {
         pages = [];
         for (let i = 0; i < hist.length; i++) {
@@ -114,7 +114,7 @@
         fumen = encoder.encode(pages);
         return fumen;
     };
-    
+
     },{"tetris-fumen":2}],2:[function(require,module,exports){
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -133,7 +133,7 @@
             return "v115@" + encoder_1.encode(data);
         },
     };
-    
+
     },{"./lib/decoder":6,"./lib/encoder":8,"./lib/field":9}],3:[function(require,module,exports){
     "use strict";
     var __assign = (this && this.__assign) || function () {
@@ -338,7 +338,7 @@
             },
         };
     };
-    
+
     },{"./defines":7}],4:[function(require,module,exports){
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -402,7 +402,7 @@
     function encodeFromValue(index) {
         return ENCODE_TABLE[index];
     }
-    
+
     },{}],5:[function(require,module,exports){
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -425,7 +425,7 @@
             },
         };
     };
-    
+
     },{}],6:[function(require,module,exports){
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -684,7 +684,7 @@
         }
         return pages;
     }
-    
+
     },{"./action":3,"./buffer":4,"./comments":5,"./defines":7,"./field":9,"./inner_field":10,"./quiz":11}],7:[function(require,module,exports){
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -790,7 +790,7 @@
         throw new Error("Unknown rotation: " + rotation);
     }
     exports.parseRotation = parseRotation;
-    
+
     },{}],8:[function(require,module,exports){
     "use strict";
     var __assign = (this && this.__assign) || function () {
@@ -1018,7 +1018,7 @@
             values: buffer,
         };
     }
-    
+
     },{"./action":3,"./buffer":4,"./comments":5,"./defines":7,"./inner_field":10,"./quiz":11}],9:[function(require,module,exports){
     "use strict";
     var __assign = (this && this.__assign) || function () {
@@ -1173,7 +1173,7 @@
         return Mino;
     }());
     exports.Mino = Mino;
-    
+
     },{"./defines":7,"./inner_field":10}],10:[function(require,module,exports){
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -1510,7 +1510,7 @@
     function rotateReverse(positions) {
         return positions.map(function (current) { return [-current[0], -current[1]]; });
     }
-    
+
     },{"./defines":7}],11:[function(require,module,exports){
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -1742,6 +1742,5 @@
         return Quiz;
     }());
     exports.Quiz = Quiz;
-    
+
     },{"./defines":7}]},{},[1]);
-    
