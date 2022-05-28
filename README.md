@@ -1,5 +1,11 @@
 # ZZTetris
 
+[![Discord Shield](https://discordapp.com/api/guilds/948358018247032883/widget.png?style=shield)](https://discord.gg/Z3qDF4DVxJ)
+[![Open issues](https://img.shields.io/github/issues/g3ner1c/wikimedia-cli)](https://github.com/swng/zztetris/issues)
+[![Open PRs](https://img.shields.io/github/issues-pr/g3ner1c/wikimedia-cli)](https://github.com/swng/zztetris/pulls)
+[![License](https://img.shields.io/github/license/swng/zztetris)](./LICENSE)
+[![Repo stars](https://img.shields.io/github/stars/swng/zztetris?style=social)](https://github.com/swng/zztetris/stargazers)
+
 **[Join the Project Discord!](https://discord.gg/Z3qDF4DVxJ)**
 
 **[Read the Docs!](https://github.com/swng/zztetris/wiki)**
