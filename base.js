@@ -211,8 +211,8 @@ const rotDir = {
 };
 
 var sfxCache = {};
-var charging = false;
-var charged = false;
+var das_charging = false;
+var das_charged = false;
 var board = [];
 var queue = [];
 var piece = '';
@@ -263,11 +263,6 @@ keys.map((k, idx) => {
 // Keys
 var keysDown;
 var lastKeys;
-
-var shiftDir = 0;
-var shiftReleased = true;
-var shiftDelay;
-var arrDelay;
 
 // mouse stuff for drawing
 
@@ -522,14 +517,8 @@ function newPiece() {
 
 	if (keysDown & flags.L) {
 		lastKeys = keysDown;
-		shiftDelay = DAS;
-		shiftReleased = false;
-		shiftDir = -1;
 	} else if (keysDown & flags.R) {
 		lastKeys = keysDown;
-		shiftDelay = DAS;
-		shiftReleased = false;
-		shiftDir = 1;
 	}
 }
 
@@ -590,8 +579,6 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 
 	keysDown = 0;
 	lastKeys = 0;
-	shiftDir = 0;
-    shiftReleased = true;
 
 	document.getElementById('tc-re').addEventListener('touchstart', function (e) {
 		input = 'RE';
@@ -650,7 +637,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		if (keysDown & flags[input]) keysDown ^= flags[input];
 		if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
 			dasID++;
-			charged = false;
+			das_charged = false;
 		}
 	});
 
@@ -662,9 +649,9 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 	document.getElementById('tc-l').addEventListener('touchend', function (e) {
 		input = 'L';
 		if (keysDown & flags[input]) keysDown ^= flags[input];
-		if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
+		if (!(keysDown & flags.L) || !(keysDown & flags.R)) {
 			dasID++;
-			charged = false;
+			das_charged = false;
 		}
 	});
 
@@ -675,7 +662,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		if (input) keysDown |= flags[input]; //* sets key in keysDown
 		if (e.repeat) return; //* if held down, do nothing
 		if (input) {
-			switch (input) {
+			switch (input) {  // handles non-movement keys
 				case 'SD':
 					softDrop();
 					break;
@@ -711,9 +698,9 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		const input = ctrl[e.code];
 		if (input) {
 			if (keysDown & flags[input]) keysDown ^= flags[input];
+			// remove key from keysDown
 			if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
 				dasID++;
-				charged = false;
 			}
 		}
 	});
@@ -782,7 +769,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		}
 	}
 
-	setInterval(() => {
+	setInterval(() => { //* gravity
 		if (document.getElementById('grav').checked) move('SD');
 	}, gravity);
 
@@ -796,7 +783,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 	function move(dir) {
 		switch (dir) {
 			case 'L':
-				if (canMove(pieces[piece][rot], xPOS - 1, yPOS) && keysDown & flags.L) {
+				if (canMove(pieces[piece][rot], xPOS - 1, yPOS)) {
 					xPOS--;
 					updateGhost();
 					playSnd('Move');
@@ -804,7 +791,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 				}
 				break;
 			case 'R':
-				if (canMove(pieces[piece][rot], xPOS + 1, yPOS) && keysDown & flags.R) {
+				if (canMove(pieces[piece][rot], xPOS + 1, yPOS)) {
 					xPOS++;
 					updateGhost();
 					playSnd('Move');
@@ -812,7 +799,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 				}
 				break;
 			case 'SD':
-				if (canMove(pieces[piece][rot], xPOS, yPOS + 1) && keysDown & flags.SD) {
+				if (canMove(pieces[piece][rot], xPOS, yPOS + 1)) {
 					yPOS++;
 					lastAction = 'SD';
 				}
@@ -842,30 +829,25 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		setShape();
 	}
 
-	function arr(dir, dasid) {
-		for (let i = 0; i < (ARR == 0 ? boardSize[0] : 1); i++) {
-			var looooop = setInterval(function () {
-				if (dasID == dasid) {
-					move(dir);
-				} else {
-					clearInterval(looooop);
-				}
-			}, ARR);
-		}
+	function arr(dir) {
+		let loop = setInterval(function () {
+			if (shiftDir == dir && keysDown & flags[dir]) {
+				move(dir);
+			} else {
+				clearInterval(loop);
+			}
+		}, ARR);
 	}
 
 	function das(dir, id) {
 		move(dir);
-		if (charged) {
-			arr(dir, id);
-		} else {
-			charging = true;
-			setTimeout(() => {
-				charging = false;
-				charged = true;
+		setTimeout(() => {
+			if (dasID == id) {
+				das_charging = false;
+				das_charged = true;
 				arr(dir, id);
-			}, DAS);
-		}
+			}
+		}, DAS);
 	}
 
 	function softDrop() {
@@ -891,90 +873,32 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		}
 	}
 
+	var shiftDir;
+r
 	function checkShift() {
 		// moving left/right with DAS and whatever
-		// just pressed
+
 		if (keysDown & flags.L && !(lastKeys & flags.L)) {
-			shiftDelay = 0;
-			arrDelay = 0;
-			shiftReleased = true;
-			shiftDir = -1;
-			charged = false;
-			dasID++;
+			// just pressed left
+			das_charged = false;
 			das('L', dasID);
+			shiftDir = 'L';
+		} else if (!(keysDown & flags.R) && lastKeys & flags.R && keysDown & flags.L) {
+			// just released right and holding left
+			if (shiftDir != 'L') das('L', dasID);
+			shiftDir = 'L';
 		}
 		if (keysDown & flags.R && !(lastKeys & flags.R)) {
-			shiftDelay = 0;
-			arrDelay = 0;
-			shiftReleased = true;
-			shiftDir = 1;
-			charged = false;
-			dasID++;
+			// just pressed right
+			das_charged = false;
 			das('R', dasID);
-		}
-
-		// just released
-		else if (!(keysDown & flags.R) && lastKeys & flags.R && keysDown & flags.L) {
-			shiftDir = -1;
-
-			dasID++;
-			das('L', dasID);
+			shiftDir = 'R';
 		} else if (!(keysDown & flags.L) && lastKeys & flags.L && keysDown & flags.R) {
-			shiftDir = 1;
-
-			dasID++;
-			das('R', dasID);
-		} else if ((!(keysDown & flags.L) && lastKeys & flags.L) || (!(keysDown & flags.R) && lastKeys & flags.R)) {
-			shiftDelay = 0;
-			arrDelay = 0;
-			shiftReleased = true;
-			shiftDir = 0;
-
-			dasID++;
-			//charged = false;
-		} else if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
-			//dasID++;
-			//charged = false;
-		}
-
-		/*
-
-		// Handle events
-		if (shiftDir) {
-			// 1. When key pressed instantly move over once.
-			if (shiftReleased) {
-				//shift(shiftDir);
-				if (shiftDir == -1) move('L');
-				if (shiftDir == 1) move('R');
-				shiftDelay++;
-				shiftReleased = false;
-				// 2. Apply DAS delay
-			} else if (shiftDelay < DAS) {
-				shiftDelay++;
-				// 3. Once the delay is complete, move over once.
-				//     Increment delay so this doesn't run again.
-			} else if (shiftDelay === DAS && DAS !== 0) {
-				//shift(shiftDir);
-				if (shiftDir == -1) move('L');
-				if (shiftDir == 1) move('R');
-				if (ARR !== 0) shiftDelay++;
-				// 4. Apply ARR delay
-			} else if (arrDelay < ARR) {
-				arrDelay++;
-				// 5. If ARR Delay is full, move piece, and reset delay and repeat.
-			} else if (arrDelay === ARR && ARR !== 0) {
-				//shift(shiftDir);
-				if (shiftDir == -1) move('L');
-				if (shiftDir == 1) move('R');
-			} else if (ARR === 0) {
-				for (let i = 0; i < 9; i++) {
-					if (shiftDir == -1) move('L');
-					if (shiftDir == 1) move('R');
-				}
-			}
-        }
-        */
-
+			// just released left and holding right
+			if (shiftDir != 'R') das('R', dasID);
+			shiftDir = 'R';
+		} 
+		
 		if (lastKeys !== keysDown) {
 			lastKeys = keysDown;
 		}
