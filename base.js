@@ -94,6 +94,20 @@ var ctrl = { // default controls
 
 };
 
+const flags = {
+	HD: 1,
+	R: 2,
+	L: 4,
+	SD: 8,
+	HL: 16,
+	CW: 32,
+	CCW: 64,
+	R180: 128,
+	UNDO: 256,
+	REDO: 512,
+	RE: 1024,
+};
+
 const color = { // piece colors
 	Z: '#F00',
 	L: '#F80',
@@ -206,7 +220,7 @@ var holdP = '';
 var held = false;
 var Ldn = (Rdn = false);
 var rot = 0;
-var dasID = (sdID = 0);
+var dasID = 0;
 var sdINT = (dasINT = null);
 var xPOS = spawn[0];
 var yPOS = spawn[1];
@@ -249,20 +263,6 @@ keys.map((k, idx) => {
 // Keys
 var keysDown;
 var lastKeys;
-
-var flags = {
-	HD: 1,
-	R: 2,
-	L: 4,
-	SD: 8,
-	HL: 16,
-	CW: 32,
-	CCW: 64,
-	R180: 128,
-	UNDO: 256,
-	REDO: 512,
-	RE: 1024,
-};
 
 var shiftDir = 0;
 var shiftReleased = true;
@@ -632,14 +632,12 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 	document.getElementById('tc-d').addEventListener('touchstart', function (e) {
 		input = 'SD';
 		keysDown |= flags[input];
-		sdID++;
-		softDrop(sdID);
+		softDrop();
 	});
 
 	document.getElementById('tc-d').addEventListener('touchend', function (e) {
 		input = 'SD';
 		if (keysDown & flags[input]) keysDown ^= flags[input];
-		sdID++;
 	});
 
 	document.getElementById('tc-r').addEventListener('touchstart', function (e) {
@@ -670,15 +668,16 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		}
 	});
 
-	document.addEventListener('keydown', function (e) {
+
+	//* keyboard input
+	document.addEventListener('keydown', e => {
 		const input = ctrl[e.code];
-		if (input) keysDown |= flags[input];
-		if (e.repeat) return;
+		if (input) keysDown |= flags[input]; //* sets key in keysDown
+		if (e.repeat) return; //* if held down, do nothing
 		if (input) {
 			switch (input) {
 				case 'SD':
-					sdID++;
-					softDrop(sdID);
+					softDrop();
 					break;
 				case 'HD':
 					hardDrop();
@@ -712,7 +711,6 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		const input = ctrl[e.code];
 		if (input) {
 			if (keysDown & flags[input]) keysDown ^= flags[input];
-			if (input == 'SD') sdID++;
 			if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
 				dasID++;
 				charged = false;
@@ -798,7 +796,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 	function move(dir) {
 		switch (dir) {
 			case 'L':
-				if (canMove(pieces[piece][rot], xPOS - 1, yPOS)) {
+				if (canMove(pieces[piece][rot], xPOS - 1, yPOS) && keysDown & flags.L) {
 					xPOS--;
 					updateGhost();
 					playSnd('Move');
@@ -806,7 +804,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 				}
 				break;
 			case 'R':
-				if (canMove(pieces[piece][rot], xPOS + 1, yPOS)) {
+				if (canMove(pieces[piece][rot], xPOS + 1, yPOS) && keysDown & flags.R) {
 					xPOS++;
 					updateGhost();
 					playSnd('Move');
@@ -814,7 +812,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 				}
 				break;
 			case 'SD':
-				if (canMove(pieces[piece][rot], xPOS, yPOS + 1)) {
+				if (canMove(pieces[piece][rot], xPOS, yPOS + 1) && keysDown & flags.SD) {
 					yPOS++;
 					lastAction = 'SD';
 				}
@@ -844,40 +842,36 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		setShape();
 	}
 
+	function arr(dir, dasid) {
+		for (let i = 0; i < (ARR == 0 ? boardSize[0] : 1); i++) {
+			var looooop = setInterval(function () {
+				if (dasID == dasid) {
+					move(dir);
+				} else {
+					clearInterval(looooop);
+				}
+			}, ARR);
+		}
+	}
+
 	function das(dir, id) {
 		move(dir);
 		if (charged) {
-			for (let i = 0; i < (ARR == 0 ? boardSize[0] : 1); i++) {
-				var looooop = setInterval(function () {
-					if (dasID == id) {
-						move(dir);
-					} else {
-						clearInterval(looooop);
-					}
-				}, ARR);
-			}
+			arr(dir, id);
 		} else {
 			charging = true;
 			setTimeout(() => {
 				charging = false;
 				charged = true;
-				for (let i = 0; i < (ARR == 0 ? boardSize[0] : 1); i++) {
-					var looooop = setInterval(function () {
-						if (dasID == id) {
-							move(dir);
-						} else {
-							clearInterval(looooop);
-						}
-					}, ARR);
-				}
+				arr(dir, id);
 			}, DAS);
 		}
 	}
 
-	function softDrop(id) {
+	function softDrop() {
 		if (SDR) {
-			var loop = setInterval(function (a) {
-				if (sdID == id) {
+			let loop = setInterval(() => {
+				if (keysDown & flags.SD) {
 					move('SD');
 				} else {
 					clearInterval(loop);
@@ -885,8 +879,8 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 			}, SDR);
 		} else {
 			// SDR is 0ms = instant SD
-			var loop = setInterval(() => {
-				if (sdID == id) {
+			let loop = setInterval(() => {
+				if (keysDown & flags.SD) {
 					yPOS = yGHO;
 					clearActive();
 					setShape();
