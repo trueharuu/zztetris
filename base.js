@@ -211,8 +211,6 @@ const rotDir = {
 };
 
 var sfxCache = {};
-var das_charging = false;
-var das_charged = false;
 var board = [];
 var queue = [];
 var piece = '';
@@ -637,7 +635,6 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		if (keysDown & flags[input]) keysDown ^= flags[input];
 		if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
 			dasID++;
-			das_charged = false;
 		}
 	});
 
@@ -649,9 +646,8 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 	document.getElementById('tc-l').addEventListener('touchend', function (e) {
 		input = 'L';
 		if (keysDown & flags[input]) keysDown ^= flags[input];
-		if (!(keysDown & flags.L) || !(keysDown & flags.R)) {
+		if (!(keysDown & flags.L) && !(keysDown & flags.R)) {
 			dasID++;
-			das_charged = false;
 		}
 	});
 
@@ -842,9 +838,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 	function das(dir, id) {
 		move(dir);
 		setTimeout(() => {
-			if (dasID == id) {
-				das_charging = false;
-				das_charged = true;
+			if (dasID == id) { //* check if das is still valid
 				arr(dir, id);
 			}
 		}, DAS);
@@ -873,14 +867,13 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		}
 	}
 
-	var shiftDir;
-r
+	var shiftDir; //* which direction key is on top
+
 	function checkShift() {
 		// moving left/right with DAS and whatever
 
 		if (keysDown & flags.L && !(lastKeys & flags.L)) {
 			// just pressed left
-			das_charged = false;
 			das('L', dasID);
 			shiftDir = 'L';
 		} else if (!(keysDown & flags.R) && lastKeys & flags.R && keysDown & flags.L) {
@@ -890,7 +883,6 @@ r
 		}
 		if (keysDown & flags.R && !(lastKeys & flags.R)) {
 			// just pressed right
-			das_charged = false;
 			das('R', dasID);
 			shiftDir = 'R';
 		} else if (!(keysDown & flags.L) && lastKeys & flags.L && keysDown & flags.R) {
