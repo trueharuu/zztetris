@@ -10,6 +10,9 @@
 	font-family: SLANT;
 	src: url('../assets/fonts/Sunmoreslantfree-DOMDx.ttf');
 }
+* {
+    touch-action: manipulation;
+}
 body {
     font-family: SLANT;
 }
