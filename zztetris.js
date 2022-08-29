@@ -1,5 +1,5 @@
 function restart() {
-	if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) {
+	if (board[board.length - 1].filter((c) => c.t != 1).length == boardSize[0]) {
 		// lazy check, will have false positives, but whatever
 		if (queue[6] == '|' && holdP == '') {
 			// if they reset after resetting, just restart hist
