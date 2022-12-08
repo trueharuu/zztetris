@@ -210,15 +210,15 @@ function rgb2hsv(r, g, b) {
 }
 
 function nearestColor(h, s, v) {
-	if (inRange(h, 0, 30) && inRange(s, 0, 1) && (inRange(v, 133, 135) || inRange(v, 63, 88))) return 'X'; // attempted manual override specifically for four.lol idk
+	if (inRange(s, 0, 1) && (inRange(v, 133, 135) || inRange(v, 63, 88))) return 'X'; // attempted manual override specifically for four.lol idk
 	if (inRange(h, 220, 225) && inRange(s, 0, 0.2) && v == 65) return '.';
 
 	if (s <= 0.2 && v / 2.55 >= 55) return 'X';
 	if (v / 2.55 <= 55) return '.';
 
 	if (inRange(h, 0, 16) || inRange(h, 325, 360)) return 'Z';
-	else if (inRange(h, 16, 41)) return 'L';
-	else if (inRange(h, 41, 70)) return 'O';
+	else if (inRange(h, 16, 39)) return 'L';
+	else if (inRange(h, 39, 70)) return 'O';
 	else if (inRange(h, 70, 149)) return 'S';
 	else if (inRange(h, 149, 200)) return 'I';
 	else if (inRange(h, 200, 266)) return 'J';
