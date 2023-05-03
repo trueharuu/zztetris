@@ -128,6 +128,10 @@
 				<td>Cell Size - Pixels</td>
 				<td class="numinput"><input type="number" id="cellpx" min="3" value="20" /></td>
 			</tr>
+            <tr>
+				<td>Audio Level</td>
+				<td class="numinput"><input type="number" id="audiolevel" min="0" max="100" value="100" /></td>
+			</tr>
 
 			<tr></tr>
 		</table>
@@ -157,6 +161,7 @@
 		'30',
 		'15',
 		'20',
+        '100',
 	];
 	var ctrlsDat = LS.config;
 
@@ -167,7 +172,7 @@
 			ctrlDat[i] = c;
 			$(`#${i + 1}`).html(c.length == 1 ? c.toUpperCase() : c);
 		}
-		['das', 'arr', 'sdr', 'cellpx'].map((id, idx) => {
+		['das', 'arr', 'sdr', 'cellpx', 'audiolevel'].map((id, idx) => {
 			var ipt = document.getElementById(id);
 			var val = parseInt(ctrls[idx + 11]);
 			ipt.value = val;
@@ -196,7 +201,7 @@
 			}
 		};
 	}
-	['das', 'arr', 'sdr', 'cellpx'].map((i, idx) => {
+	['das', 'arr', 'sdr', 'cellpx','audiolevel'].map((i, idx) => {
 		var ipt = document.getElementById(i);
 		ipt.oninput = function (e) {
 			var val = ipt.value ? ipt.value : '0';
