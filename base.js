@@ -1022,7 +1022,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		if (cleared > 4) cleared = 4; // nani
 		if (cleared > 0) text += ['NULL', 'SINGLE', 'DOUBLE', 'TRIPLE', 'QUAD'][cleared];
 		if (pc) text += '\nPERFECT\nCLEAR!';
-
+        if (b2b > 0 && (tspin || cleared == 4)) text += ' x' + b2b.toString();
 		if (text != '') notify(text);
 		if (tspin || cleared == 4) playSnd('ClearTetra', true);
 		if (pc) playSnd('PerfectClear', 1);
