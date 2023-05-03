@@ -220,6 +220,7 @@ var holdP = '';
 var held = false;
 var Ldn = (Rdn = false);
 var rot = 0;
+var oldcombo = 0;
 var dasID = 0;
 var sdINT = (dasINT = null);
 var xPOS = spawn[0];
@@ -542,7 +543,14 @@ function undo() {
 		queue = JSON.parse(hist[histPos]['queue']);
 		holdP = hist[histPos]['hold'];
 		piece = hist[histPos]['piece'];
-
+        if (combo >= 1)
+        {
+            combo-=1;
+        }
+        else
+        {
+            combo=oldcombo;
+        }
 		xPOS = spawn[0];
 		yPOS = spawn[1];
 		rot = 0;
@@ -1004,8 +1012,16 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 
 		if (board[board.length - 1].filter((c) => c.t == 0).length == boardSize[0]) pc = true;
 
-		if (cleared == 0) combo = -1;
+		if (cleared == 0) 
+        {    
+            if(combo >= 1)
+            {
+              oldcombo = combo;
+            }
+            combo = -1;
+        }
 		else {
+            oldcombo += 1;
 			combo += 1;
 		}
 
@@ -1022,7 +1038,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		if (cleared > 4) cleared = 4; // nani
 		if (cleared > 0) text += ['NULL', 'SINGLE', 'DOUBLE', 'TRIPLE', 'QUAD'][cleared];
 		if (pc) text += '\nPERFECT\nCLEAR!';
-
+        if (b2b > 0 && (tspin || cleared == 4)) text += ' x' + b2b.toString();
 		if (text != '') notify(text);
 		if (tspin || cleared == 4) playSnd('ClearTetra', true);
 		if (pc) playSnd('PerfectClear', 1);
