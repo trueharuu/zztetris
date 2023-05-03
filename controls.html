@@ -165,7 +165,7 @@
 	];
 	var ctrlsDat = LS.config;
 
-	if (ctrlsDat && LS.version == '2021-10-12a') {
+	if (ctrlsDat && LS.version == '2023-05-02a') {
 		var ctrls = JSON.parse(ctrlsDat);
 		for (let i = 0; i < 11; i++) {
 			var c = ctrls[i];
@@ -182,7 +182,7 @@
 
 	function saveCtrls() {
 		LS.config = JSON.stringify(ctrlDat);
-		LS.version = '2021-10-12a';
+		LS.version = '2023-05-02a';
 	}
 
 	for (let i = 1; i <= 11; i++) {
