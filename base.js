@@ -152,7 +152,7 @@ var hiddenRows = 20; // starts from the top
 var DAS = 160;
 var ARR = 30;
 var SDR = 15;
-
+var audiolevel = 100;
 
 //* client side config storage
 
@@ -175,13 +175,15 @@ if (LS.config && LS.version == '2021-10-12a') {
 	ARR = parseInt(CTRLS[12]);
 	SDR = parseInt(CTRLS[13]);
 	cellSize = parseInt(CTRLS[14]);
+    audiolevel = parseInt(CTRLS[15]);
+    console.log("Loaded Vars");
 
 } else {
 
 	// No config found or outdated version, make new
-
+    console.log("No Config Found");
 	let codes = Object.keys(ctrl); // Deafult keys
-	codes.push('160', '30', '15', '20'); // Handling settings
+	codes.push('160', '30', '15', '20','100'); // Handling settings
 	LS.config = JSON.stringify(codes);
 	aboutPopup();
 
@@ -773,8 +775,10 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		if (sfxCache[sfx] && !overlap) return sfxCache[sfx].play();
 		var s = new Audio(`assets/sfx/${sfx}.wav`);
 		sfxCache[sfx] = s;
+        s.volume = audiolevel/100;
 		s.play();
 	}
+
 
 	function move(dir) {
 		switch (dir) {
