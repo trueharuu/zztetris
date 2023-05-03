@@ -13,6 +13,16 @@
 * {
     touch-action: manipulation;
 }
+body, body * {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Standard syntax */
+}
+
+
 body {
     font-family: SLANT;
 }
@@ -54,6 +64,7 @@ input[type='radio'] {
 footer {
 	width: 100%;
 }
+
 
 
 .tc {
