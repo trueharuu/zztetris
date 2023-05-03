@@ -159,7 +159,7 @@ var audiolevel = 100;
 //? Sketchy settings processing probably could be simplified
 //? Should probably add handling settings in here in the future - g3ner1c
 
-if (LS.config && LS.version == '2021-10-12a') {
+if (LS.config && LS.version == '2023-05-02a') {
 
 	// Load saved config from LocalStorage
 
