@@ -27,8 +27,9 @@ function restart() {
 	yPOS = spawn[1];
 	xGHO = spawn[0];
 	yGHO = spawn[1];
-
+    oldcombo = combo;
 	combo = -1;
+    oldb2b = b2b;
 	b2b = -1;
 	newPiece();
 }
