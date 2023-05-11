@@ -221,6 +221,7 @@ var held = false;
 var Ldn = (Rdn = false);
 var rot = 0;
 var oldcombo = 0;
+var oldb2b = 0;
 var dasID = 0;
 var sdINT = (dasINT = null);
 var xPOS = spawn[0];
@@ -551,6 +552,14 @@ function undo() {
         {
             combo=oldcombo;
         }
+        if(b2b >= 1 && (tspin || cleared == 4))
+        {   
+            b2b-=1;
+        }
+        else
+        {
+            b2b = oldb2b;        
+        }
 		xPOS = spawn[0];
 		yPOS = spawn[1];
 		rot = 0;
@@ -722,7 +731,9 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 	];
 	histPos = 0;
 	combo = -1;
-	b2b = -1;
+    oldcombo = -1;
+    oldb2b = 0;
+	b2b = 0;
 
     if (special_restart) {
         restart();
@@ -1018,16 +1029,30 @@ function callback(gravity=700, special_restart=false, cheese=false) {
             {
               oldcombo = combo;
             }
+            if(b2b >= 1)
+            {
+                oldb2b = b2b;
+            }
             combo = -1;
+            console.log("nothing cleared");
         }
 		else {
-            oldcombo += 1;
-			combo += 1;
+            combo += 1;
+			oldcombo = combo;
 		}
 
-		if (cleared > 0) {
-			if (tspin || cleared == 4) b2b += 1;
-			else b2b = -1;
+		if (cleared > 0) 
+        {
+			if (tspin || cleared == 4) 
+            {
+                b2b += 1;
+                oldb2b = b2b;
+            }
+			else
+            {
+                console.log("no b2b");
+                b2b = -1;
+            }
 		}
 
 		text = '';
