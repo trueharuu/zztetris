@@ -887,6 +887,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 					clearInterval(loop);
 				}
 			}, 0);
+			if (yPOS != yGHO) lastAction = 'SD';
 		}
 	}
 
@@ -925,6 +926,7 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 		playSnd('HardDrop', true);
 		setShape(true);
 		clearActive();
+		lastAction = 'HD';
 		cleared = checkLines();
 		newPiece();
 
@@ -946,8 +948,6 @@ function callback(gravity=700, special_restart=false, cheese=false) {
                 lastCol = curCol;
 		    }
         }
-
-		lastAction = 'HD';
 
 		updateHistory();
 	}
