@@ -85,8 +85,8 @@ var ctrl = { // default controls
 	ArrowDown: 'SD',
 	Space: 'HD',
 	ShiftLeft: 'HL',
-	KeyZ: 'CW',
-	KeyX: 'CCW',
+	KeyX: 'CW',
+	KeyZ: 'CCW',
 	KeyC: 'R180',
 	KeyR: 'RE',
 	KeyT: 'UNDO',
@@ -921,12 +921,13 @@ function callback(gravity=700, special_restart=false, cheese=false) {
 	}
 
 	function hardDrop() {
+		if (yPOS != yGHO) lastAction = 'HD';
 		yPOS = yGHO;
 		held = false;
 		playSnd('HardDrop', true);
 		setShape(true);
 		clearActive();
-		lastAction = 'HD';
+		
 		cleared = checkLines();
 		newPiece();
 
